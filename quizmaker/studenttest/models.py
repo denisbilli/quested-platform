@@ -32,15 +32,15 @@ class Course(models.Model):
 
 
 class Enrollment(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
     enrollment_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ['student', 'course']
 
     def __str__(self):
-        return f"{self.student.name} - {self.course.name}"
+        return f"{self.student.get_full_name()} - {self.course.name}"
 
 
 class Test(models.Model):

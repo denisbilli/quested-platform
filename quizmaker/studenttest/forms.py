@@ -35,31 +35,6 @@ class SubmissionForm(forms.ModelForm):
         return submission
 
 
-class RegistrationForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-    username = forms.CharField(max_length=30)  # Aggiungi questo campo
-
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'username', 'password1', 'password2', )
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.username = self.cleaned_data['username']
-
-        if commit:
-            user.save()
-        return user
-
-
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=255)
-    password = forms.CharField(widget=forms.PasswordInput)
-
-
 class UpdateProfileForm(UserChangeForm):
     password = None  # this line will exclude the password field
     first_name = forms.CharField(max_length=30)

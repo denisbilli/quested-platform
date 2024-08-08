@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="xs-pd-20-10">
+    <div class="min-height-200px">
+
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="title">
+                        <h4>{{ title }}</h4>
+                    </div>
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <form method="GET" action="">
+                        <div class="input-group input-group-custom weddings-filters" style="justify-content: end; align-items: center">
+                            {% if year_choices %}
+                            <select class="custom-select2 form-control" name="year" id="year"
+                                style="width: 20%; height: 38px;">
+                                {% for year in year_choices %}
+                                    {% if year == selected_year %}
+                                        <option value="{{ year }}" selected>{{ year }}</option>
+                                    {% else %}
+                                        <option value="{{ year }}">{{ year }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-outline-secondary src-btn-filter-custom" type="submit">Filter
+                            </button>
+                            {% endif %}
+                            {% block custom_filter %}{% endblock %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if not is_dashboard %}
+            <div class="card-box mb-10">
+                <div class="pd-20 d-flex stats-container">
+                    <h4 class="text-blue h4">{{ title }} {{ selected_year }}</h4>
+                    <ul class="stats-info">
+                    {% block internal_more_info %}{% endblock %}
+                    </ul>
+                </div>
+                <div class="pb-20" style="padding: 20px">
+        {% endif %}
+                    {% block internal_content %}{% endblock %}
+        {% if not is_dashboard %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            $('.custom-select2').select2();
+        });
+    </script>
+
+    <style>
+        .select2-selection--single {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .stats-container {
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stats-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            ul.stats-info li {
+                font-size: 12px;
+            }
+
+            .dataTables_length {
+                padding: 0;
+            }
+
+            .dataTables_length label {
+                font-size: 12px; /* Ridimensiona il font */
+                padding: 5px; /* Riduci il padding se necessario */
+            }
+
+            .dataTables_filter {
+                text-align: center;
+                padding: 0;
+            }
+
+            .dataTables_filter label input {
+                width: 55% !important;
+            }
+
+            .dataTables_filter label {
+                font-size: 12px; /* Ridimensiona il font */
+                width: 100%; /* Allarga il campo di ricerca se necessario */
+            }
+
+            .row.wrapper-filter {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                align-items: center;
+                justify-items: start;
+                justify-content: space-between;
+                padding-left: 0.5rem;
+            }
+
+            .row.wrapper-filter div {
+                padding: 0;
+            }
+        }
+    </style>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'src/plugins/switchery/switchery.min.css' %}">
+
+	<!-- buttons for Export datatable -->
+	<script src="{% static 'src/plugins/datatables/js/dataTables.buttons.min.js' %}"></script>
+	<script src="{% static 'src/plugins/datatables/js/buttons.bootstrap4.min.js' %}"></script>
+	<script src="{% static 'src/plugins/datatables/js/buttons.print.min.js' %}"></script>
+	<script src="{% static 'src/plugins/datatables/js/buttons.html5.min.js' %}"></script>
+	<script src="{% static 'src/plugins/datatables/js/buttons.flash.min.js' %}"></script>
+	<script src="{% static 'src/plugins/datatables/js/pdfmake.min.js' %}"></script>
+	<script src="{% static 'src/plugins/datatables/js/vfs_fonts.js' %}"></script>
+    <script src="{% static 'src/plugins/switchery/switchery.min.js' %}"></script>
+	<!-- Datatable Setting js -->
+	<script src="{% static 'vendors/scripts/datatable-setting.js' %}"></script>
+
+    <!-- Script interni -->
+    {% block internal_scripts %}{% endblock %}
+    <!-- Fine script interni -->
+{% endblock %}

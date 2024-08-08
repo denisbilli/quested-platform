@@ -5,6 +5,7 @@ import chardet
 import codecs
 import html
 
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
 from django.http import FileResponse
 from django.views import View
 from django.utils import timezone
@@ -13,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib import messages
-from django.db.models import Sum, Avg
+from django.db.models import Sum, Avg, Prefetch
 from django.core.files.storage import default_storage
 from django.db.models import Count, Q
 
@@ -26,7 +27,7 @@ from reportlab.lib.units import mm
 from reportlab.lib.enums import TA_RIGHT
 
 from .models import *
-from .forms import SubmissionForm, RegistrationForm, LoginForm, UpdateProfileForm, PasswordChangeForm
+from .forms import SubmissionForm, UpdateProfileForm, PasswordChangeForm
 
 
 class MyDocTemplate(BaseDocTemplate):
@@ -69,31 +70,34 @@ class MyDocTemplate(BaseDocTemplate):
 
 @login_required
 def profile(request):
-    form = UpdateProfileForm(instance=request.user)
+    # Use Django's UserChangeForm to update user information
+    form = UserChangeForm(instance=request.user)
     password_form = PasswordChangeForm(request.user)
 
     if request.method == 'POST':
-        form_type = request.POST.get('form_type')
-
-        if form_type == 'update_profile':
-            form = UpdateProfileForm(request.POST, instance=request.user)
+        if 'update_profile' in request.POST:
+            form = UserChangeForm(request.POST, instance=request.user)
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Your profile was successfully updated!')
                 return redirect('profile')
+            else:
+                messages.error(request, 'Please correct the errors below.')
 
-        elif form_type == 'change_password':
+        elif 'change_password' in request.POST:
             password_form = PasswordChangeForm(request.user, request.POST)
             if password_form.is_valid():
                 user = password_form.save()
-                update_session_auth_hash(request, user)  # Update session to avoid logging out
+                update_session_auth_hash(request, user)  # Important to prevent logout
                 messages.success(request, 'Your password was successfully updated!')
                 return redirect('profile')
+            else:
+                messages.error(request, 'Please correct the errors below.')
 
-        else:
-            messages.error(request, 'Something went wrong.')
-
-    return render(request, 'profile.html', {'form': form, 'password_form': password_form})
+    return render(request, 'registration/profile.html', {
+        'form': form,
+        'password_form': password_form
+    })
 
 
 @login_required
@@ -102,8 +106,18 @@ def course_list(request):
     courses = Course.objects.filter(
         Q(visible_to__isnull=True) | Q(visible_to=request.user),
         enabled=True,
+    ).prefetch_related(
+        Prefetch('enrollments', queryset=Enrollment.objects.filter(student=request.user), to_attr='user_enrollment')
     )
-    return render(request, 'course_list.html', {'courses': courses, 'user': request.user})
+
+    num_courses = courses.count()
+    num_placeholders = (3 - (num_courses % 3)) % 3
+
+    return render(request, 'course_list.html', {
+        'courses': courses,
+        'num_placeholders': num_placeholders,
+        'user': request.user
+    })
 
 
 @login_required
@@ -132,10 +146,12 @@ def test_list(request):
 @login_required
 def test_list_by_course(request, course_id):
     # Recupera il corso specificato o restituisce una pagina 404 se non trovato
-    course = get_object_or_404(Course, pk=course_id)
+    course = get_object_or_404(Course.objects.prefetch_related(
+        Prefetch('enrollments', queryset=Enrollment.objects.filter(student=request.user), to_attr='user_enrollment')
+    ), pk=course_id)
 
     cannot_enter_view = not request.user.is_superuser and (
-                (course.enabled and not course.is_student_enrolled(request.user)) or (not course.enabled))
+        (course.enabled and not course.is_student_enrolled(request.user)) or (not course.enabled))
 
     print(f"{request.user} can view the course {course_id}? {not cannot_enter_view} because: \n"
           f"- is {request.user} superuser? {request.user.is_superuser}\n"
@@ -143,20 +159,25 @@ def test_list_by_course(request, course_id):
           f"- is student {request.user} enrolled in course {course.name}? {course.is_student_enrolled(request.user)}\n")
 
     if cannot_enter_view:
-        back_url = request.META.get('HTTP_REFERER',
-                                    '/')  # Ottieni l'URL del chiamante, default alla home se non presente
+        back_url = request.META.get('HTTP_REFERER', '/')  # Ottieni l'URL del chiamante, default alla home se non presente
         return render(request, 'error.html', {
             'message': f'Spiacente! Non hai i permessi per accedere al corso {course.name}',
             'back_url': back_url
         })
 
     # Filtra i test associati a quel corso specifico
-    tests = Test.objects.filter(course=course)
+    tests = Test.objects.filter(course=course).order_by("name")
 
-    # Puoi aggiungere ulteriore logica qui, ad esempio controllare permessi specifici
+    num_tests = tests.count()
+    num_placeholders = (3 - (num_tests % 3)) % 3
 
     # Restituisce i test al template
-    return render(request, 'test_list.html', {'course': course, 'tests': tests, 'has_footer': True })
+    return render(request, 'test_list.html', {
+        'course': course,
+        'tests': tests,
+        'num_placeholders': num_placeholders,
+        'has_footer': True
+    })
 
 
 @login_required
@@ -235,17 +256,21 @@ def submit_exercise(request, exercise_id):
 
     if request.method == 'POST':
         if not test.is_graded:
-            rating = request.POST.get('rating')
+            rating = int(request.POST.get('rating') or 0)
             signed = request.POST.get('signed')
             print(f'The exercise has been rated {rating} and is {signed}')
-            if rating is not None:
+            if rating is not None and rating > 0:
                 user_exercise.stars = rating
+            elif rating == 0:
+                user_exercise.stars = None
             if signed is not None:
                 user_exercise.signed = True
             else:
                 user_exercise.signed = False
             user_exercise.save()
-            return redirect('exercise_list', test_id=exercise.test.id)
+            # Stay on the same exercise page after successful submission
+            return redirect('submit_exercise', exercise_id=exercise_id)
+            # return redirect('exercise_list', test_id=exercise.test.id)
         else:
             form = SubmissionForm(request.POST, request.FILES, instance=submission)
             if form.is_valid():
@@ -264,7 +289,9 @@ def submit_exercise(request, exercise_id):
                 form.user = request.user
                 form.exercise = exercise
                 form.save(commit=True)
-                return redirect('exercise_list', test_id=exercise.test.id)
+                # Stay on the same exercise page after successful submission
+                return redirect('submit_exercise', exercise_id=exercise_id)
+                # return redirect('exercise_list', test_id=exercise.test.id)
     else:
         cannot_enter_view = not request.user.is_superuser and (
                 (test.is_graded and test.due_date < now) or (not test.enabled))
@@ -286,7 +313,8 @@ def submit_exercise(request, exercise_id):
                                                     'submission': submission,
                                                     'user_exercise': user_exercise,
                                                     'has_footer': True,
-                                                    'fixed_footer': True })
+                                                    'fixed_footer': True
+                                                    })
 
 
 @login_required
@@ -406,22 +434,24 @@ class UserTestReportView(View):
 
 
 def register(request):
-    register_form = RegistrationForm()
-    login_form = LoginForm()
+    register_form = UserCreationForm()
+    login_form = AuthenticationForm()
 
     if request.method == 'POST':
-        if 'register' in request.POST:  # This will be true if the user is trying to register
-            register_form = RegistrationForm(request.POST)
+        if 'register' in request.POST:
+            register_form = UserCreationForm(request.POST)
             if register_form.is_valid():
                 user = register_form.save()
                 login(request, user)
                 return redirect('course_list')
-        elif 'login' in request.POST:  # This will be true if the user is trying to log in
-            login_form = LoginForm(request.POST)
+        elif 'login' in request.POST:
+            login_form = AuthenticationForm(request, request.POST)
             if login_form.is_valid():
-                user = authenticate(request, username=login_form.cleaned_data.get('username'), password=login_form.cleaned_data.get('password'))
-                if user is not None:
-                    login(request, user)
-                    return redirect('course_list')
+                user = login_form.get_user()
+                login(request, user)
+                return redirect('course_list')
 
-    return render(request, 'register.html', {'register_form': register_form, 'login_form': login_form})
+    return render(request, 'registration/register.html', {
+        'register_form': register_form,
+        'login_form': login_form
+    })

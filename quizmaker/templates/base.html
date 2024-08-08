@@ -1,95 +1,188 @@
-<!-- base.html -->
-
 <!DOCTYPE html>
+{% load static %}
 {% load i18n %}
 {% load form_tags %}
-{% load static %}
 {% get_current_language as LANGUAGE_CODE %}
 
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% translate "QuestEd" %}{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="{% static 'styles.css' %}" rel="stylesheet">
+
+    <!-- Site favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'vendors/images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'vendors/images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'vendors/images/favicon-16x16.png' %}">
+
+    <!-- Mobile Specific Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/core.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/icon-font.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'src/plugins/datatables/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'src/plugins/datatables/css/responsive.bootstrap4.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'src/styles/custom.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" rel="stylesheet">
+    <link id="prism-theme" rel="stylesheet" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/{{ LANGUAGE_CODE }}">
-            <img src="{% static 'QuestEd_logo.svg' %}" alt="Logo" width="70" height="70">
-            <span class="logo-text">{% translate "QuestEd" %}</span>
-        </a>
-        <!-- Titolo del Corso al Centro -->
-        <div class="mx-auto">
-            {% block course_title %}{% endblock %}
+    <div class="pre-loader">
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="{% static 'src/images/quested_dark.png' %}"
+                     alt=""
+                     style="width: 280px;"
+                     data-dark-src="{% static 'src/images/quested_dark.png' %}"
+                     data-light-src="{% static 'src/images/quested_light.png' %}">
+            </div>
+            <div class='loader-progress' id="progress_div">
+                <div class='bar' id='bar1'></div>
+            </div>
+            <div class='percent' id='percent1'>0%</div>
+            <div class="loading-text">
+                Loading...
+            </div>
         </div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {% translate "Lingua" %}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="languageDropdown">
-                            <form action="{% url 'set_language' %}" method="post">
-                                {% csrf_token %}
-                                {% for code, name in languages %}
-                                    <button class="dropdown-item" type="submit" name="language" value="{{ code }}">{{ name }}</button>
-                                {% endfor %}
-                            </form>
-                        </div>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {% blocktrans with firstname=user.first_name lastname=user.last_name %}Ciao, {{ firstname }} {{ lastname }}{% endblocktrans %}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="{% url 'profile' %}">{% translate "Profilo" %}</a>
-                            {% if user.is_superuser or user.is_staff %}
-                                <a class="dropdown-item" href="{% url 'admin:index' %}">{% translate "Amministrazione" %}</a>
-                            {% endif %}
-                            <div class="dropdown-divider"></div>
-                            <form method="post" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <button type="submit" class="dropdown-item">{% translate "Esci" %}</button>
-                            </form>
-                        </div>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">{% translate "Registrazione/Login" %}</a>
-                    </li>
-                {% endif %}
-            </ul>
+    </div>
+    
+    <div class="header">
+        <div class="header-left">
+            {% include "headers/header_left.html" %}
         </div>
-    </nav>
+        <div class="header-right">
+            {% include "headers/header_right.html" %}
+        </div>
+    </div>
+	
+    <div class="right-sidebar">
+        {% include "sidebars/sidebar_right.html" %}
+    </div>
+	
+	<div class="left-side-bar">
+        <div class="brand-logo">
+            <a href="/">
+                <img src="{% static 'src/images/quested_light.png' %}" alt="" class="dark-logo">
+                <img src="{% static 'src/images/quested_dark.png' %}" alt="" class="light-logo">
+            </a>
+            <div class="close-sidebar" data-toggle="left-sidebar-close">
+                <i class="ion-close-round"></i>
+            </div>
+        </div>
+        <div class="menu-block customscroll">
+            {% include "sidebars/sidebar_left.html" %}
+        </div>
+    </div>
+    <div class="mobile-menu-overlay"></div>
 
-    <div class="container mt-5 {% if fixed_footer %}with-fixed-footer{% endif %}">
-        {% block content %}
-        {% endblock %}
+    <div class="main-container">
+        {% block content %}{% endblock %}
+
+        <div class="footer-wrap pd-20 mb-20 card-box">
+            {% translate "QuestEd" %} {% translate "è sviluppato e mantenuto da" %} <a href="https://github.com/denisbilli" target="_blank">Denis Billi</a>
+        </div>
     </div>
 
-    <div class="{% if fixed_footer %}fixed-bottom{% endif %} d-flex justify-content-between p-3 bg-light" style="{% if not has_footer %}display: none !important;{% endif %}">
-        {% block footer %}
-        {% endblock %}
-    </div>
-
-    <!-- Javascript -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-c.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+
+    <!-- js -->
+    <script src="{% static 'vendors/scripts/core.js' %}"></script>
+    <script src="{% static 'vendors/scripts/script.js' %}"></script>
+    <script src="{% static 'vendors/scripts/process.js' %}"></script>
+    <script src="{% static 'vendors/scripts/layout-settings.js' %}"></script>
+
+    <!-- Javascript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script>
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        $('#mark-all-read').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/mark-all-notifications-read/', // URL della vista AJAX per segnare tutte le notifiche come lette
+                method: 'POST',
+                headers: {'X-CSRFToken': getCookie('csrftoken')},
+                success: function(response) {
+                    // Aggiorna l'UI per riflettere che tutte le notifiche sono state lette
+                    // Ad esempio, puoi nascondere il badge delle notifiche non lette
+                    $('.badge.notification-active').hide();
+                    // Opzionale: Aggiorna la lista delle notifiche
+                },
+                error: function() {
+                    console.error('Error marking all notifications as read.');
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.sidebar-menu')) {
+                    //console.log("click fuori!");
+                    var elementsToShow = document.querySelectorAll('.collapsed-sidebar-mode .sidebar-menu li.show a[data-option="on"]');
+                    //console.log(elementsToShow);
+
+                    elementsToShow.forEach(function(element) {
+                        element.click();
+                    });
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            function loadPrismTheme() {
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                const themeLink = document.getElementById('prism-theme');
+                if (isDarkMode) {
+                    themeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css';
+                } else {
+                    themeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css';
+                }
+            }
+
+            // Initial load
+            loadPrismTheme();
+
+            // Optional: Listen for theme changes
+            const observer = new MutationObserver(loadPrismTheme);
+            observer.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        });
+    </script>
     {% block custom_js %}{% endblock %}
 
     <!-- Stili -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    {% block scripts %}{% endblock %}
     {% block custom_css %}{% endblock %}
+
 </body>
 </html>

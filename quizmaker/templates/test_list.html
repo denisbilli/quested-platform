@@ -1,43 +1,103 @@
-<!-- test_list.html -->
 {% extends 'base.html' %}
 {% load i18n %}
+{% load course_filters %}
+{% load static %}
 
 {% block course_title %}
   <span class="navbar-course-title">{{ course.name }}</span>
 {% endblock %}
 
 {% block content %}
-{% if tests %}
-  <table class="table mt-5">
-    <thead>
-      <tr>
-        <th scope="col">{% translate "Test" %}</th>
-        <th scope="col">{% translate "Descrizione" %}</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for test in tests %}
-        <tr class="{% if test.is_graded %}table-success{% endif %}">
-          <td class="align-middle">{{ test.name }}</td>
-          <td class="align-middle">{{ test.description|safe }}</td>
-          <td class="align-middle">
-            {% if test.is_graded %}
-              <a class="btn btn-success" href="{% url 'exercise_list' test.id %}">{% translate "Inizia Test" %}</a>
-            {% else %}
-              <a class="btn btn-primary" href="{% url 'exercise_list' test.id %}">{% translate "Mostra Esercizi" %}</a>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <p class="mt-5">{% translate "Non ci sono test attivi." %}</p>
-{% endif %}
-{% endblock %}
+<div class="xs-pd-20-10">
+    <div class="min-height-200px">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <div class="title">
+                        <h4>{{ course.name }}</h4>
+                    </div>
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'course_list' %}">{% translate "Lista Corsi" %}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
 
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 mb-30">
+                <div class="pd-20 card-box height-100-p">
+                    <!-- Nome del Corso -->
+                    <h5 class="text-blue mb-20">{{ course.name }}</h5>
 
-{% block footer %}
-    <button type="button" onclick="location.href='{% url 'course_list' %}'" class="btn btn-secondary">{% translate "Indietro" %}</button>
+                    <!-- Data di Iscrizione -->
+                    {% if course.user_enrollment %}
+                        <p class="text-muted mb-20">{% translate "Iscritto il" %}: {{ course.user_enrollment.0.enrollment_date|date:"d M Y" }}</p>
+                    {% else %}
+                        <p class="text-muted mb-20">{% translate "Non iscritto" %}</p>
+                    {% endif %}
+
+                    <!-- Bottone per Tornare Indietro -->
+                    <button type="button" onclick="location.href='{% url 'course_list' %}'" class="btn btn-primary btn-block">{% translate "Indietro ai Corsi" %}</button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 mb-30">
+                <div class="pd-20 card-box height-100-p">
+                    <div class="pd-20">
+                        <h4 class="text-blue h4">{% translate "Test ed Esercizi Disponibili" %}</h4>
+                    </div>
+                    <div class="pb-20" style="padding: 20px">
+                        {% if tests %}
+                            <div class="card-deck mb-4">
+                                {% for test in tests %}
+                                <div class="card mb-4" style="min-width: 18rem;">
+                                    {% if course.image %}
+                                    <img class="card-img-top" src="{{ course.image.url }}" alt="{{ course.name }}">
+                                    {% else %}
+                                    <img class="card-img-top" src="{% static 'vendors/images/img4.jpg' %}" alt="{{ course.name }}">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ test.name }}</h5>
+                                        <p class="card-text">{{ test.description|safe }}</p>
+                                        {% if test.is_graded %}
+                                            <a href="{% url 'exercise_list' test.id %}" class="btn btn-success">{% translate "Inizia Test" %}</a>
+                                        {% else %}
+                                            <a href="{% url 'exercise_list' test.id %}" class="btn btn-primary">{% translate "Apri" %}</a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer">
+                                        {% if test.is_graded %}
+                                          <small class="text-muted">{% translate "Data di consegna:" %} {{ test.due_date|date:"d M Y H:m" }}</small>
+                                        {% else %}
+                                          <small class="text-muted">{{ test.exercises.count }} {% translate "esercizi" %}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                <!-- Aggiungi placeholder per mantenere l'allineamento -->
+                                {% for _ in num_placeholders|range_filter %}
+                                <div class="card mb-4" style="visibility: hidden;">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Placeholder</h5>
+                                        <p class="card-text">This is a placeholder card.</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="mt-5">{% translate "Non ci sono test attivi." %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

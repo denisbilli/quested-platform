@@ -1,109 +1,183 @@
-<!-- exercise_list.html -->
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
+
+{% block filters %}
+{% endblock %}
 
 {% block content %}
-  <div class="d-flex justify-content-between">
-    <h2>{{ test.name }}</h2>
-    <div class="d-flex justify-content-end align-items-center flex-grow-1">
-      {% if test.is_graded %}
-        <h4 class="mx-auto">{% translate "Punteggio totale" %}: {{ total_score }}</h4>
-      {% endif %}
-      <button id="toggleView" class="btn btn-info mr-2">{% translate "Tabella" %}</button>
-      <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {% translate "Nessun filtro" %}
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item exercise-filter" href="#" data-filter="all">{% translate "Nessun filtro" %}</a>
-          <a class="dropdown-item exercise-filter" href="#" data-filter="O">{% translate "Domanda aperta" %}</a>
-          <a class="dropdown-item exercise-filter" href="#" data-filter="M">{% translate "Scelta multipla" %}</a>
-          <a class="dropdown-item exercise-filter" href="#" data-filter="C">{% translate "Codice" %}</a>
-          <a class="dropdown-item exercise-filter" href="#" data-filter="D">{% translate "Diagramma di flusso" %}</a>
+<div class="xs-pd-20-10">
+    <div class="min-height-200px">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-3 col-sm-12">
+                    <div class="title">
+                        <h4>{{ test.name }}</h4>
+                    </div>
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'test_list_by_course' course_id=test.course.id %}">{% translate "Corsi" %}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ test.name }}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-md-9 col-sm-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-end align-items-center flex-grow-1">
+                            {% if test.is_graded %}
+                            <h4 class="mx-auto">{% translate "Punteggio totale" %}: {{ total_score }}</h4>
+                            {% endif %}
+                            <button id="toggleView" class="btn btn-info mr-2">{% translate "Tabella" %}</button>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {% translate "Nessun filtro" %}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item exercise-filter" href="#" data-filter="all">{% translate "Nessun filtro" %}</a>
+                                    <a class="dropdown-item exercise-filter" href="#" data-filter="O">{% translate "Domanda aperta" %}</a>
+                                    <a class="dropdown-item exercise-filter" href="#" data-filter="M">{% translate "Scelta multipla" %}</a>
+                                    <a class="dropdown-item exercise-filter" href="#" data-filter="C">{% translate "Codice" %}</a>
+                                    <a class="dropdown-item exercise-filter" href="#" data-filter="D">{% translate "Diagramma di flusso" %}</a>
+                                </div>
+                            </div>
+                            {% if test.is_graded %}
+                            <div class="dropdown ml-2">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownSortButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {% translate "Punteggio più basso" %}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownSortButton">
+                                    <a class="dropdown-item sort-filter" href="#" data-sort="score:asc">{% translate "Punteggio più basso" %}</a>
+                                    <a class="dropdown-item sort-filter" href="#" data-sort="score:desc">{% translate "Punteggio più alto" %}</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      {% if test.is_graded %}
-      <div class="dropdown ml-2">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownSortButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {% translate "Punteggio più basso" %}
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownSortButton">
-          <a class="dropdown-item sort-filter" href="#" data-sort="score:asc">{% translate "Punteggio più basso" %}</a>
-          <a class="dropdown-item sort-filter" href="#" data-sort="score:desc">{% translate "Punteggio più alto" %}</a>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 mb-30">
+                <div class="pd-20 card-box height-100-p">
+                    <!-- Dettagli del Test -->
+                    <h5 class="text-center h5 mb-0">{{ test.name }}</h5>
+                    <div class="profile-info">
+                        <h5 class="mb-20 h5 text-blue">{% translate "Informazioni sul test" %}</h5>
+
+                        <div class="grid-container">
+                            <div class="grid-item">
+                                <div class="label">{% translate "Descrizione" %}:</div>
+                                <div class="content">{{ test.description }}</div>
+                            </div>
+                            {% if test.is_graded %}
+                            <div class="grid-item">
+                                <div class="label">{% translate "Punteggio totale" %}:</div>
+                                <div class="content">{{ total_score }}</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="label">{% translate "Consegna" %}:</div>
+                                <div class="content">{{ test.due_date }}</div>
+                            </div>
+                            {% endif %}
+                            <div class="grid-item">
+                                <div class="label">{% translate "Creato da" %}:</div>
+                                <div class="content">{{ test.creator.get_full_name }}</div>
+                            </div>
+                        </div>
+                        <!-- Bottone per Tornare Indietro -->
+                        <button type="button" onclick="location.href='{% url 'test_list_by_course' course_id=test.course.id %}'" class="btn btn-secondary mt-4">{% translate "Indietro" %}</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 mb-30">
+                <div class="card-box mb-10">
+                    <div class="pd-20">
+                        <h4 class="text-blue h4">{% translate "Esercizi Disponibili" %}</h4>
+                    </div>
+                    <div class="pb-20" style="padding: 20px">
+                        {% if exercises %}
+                            <div class="row" id="exercise-cards">
+                                {% for exercise in exercises %}
+                                <div class="col-md-4 mb-4 exercise-card mix" data-type="{{ exercise.type }}" {% if exercise.test.is_graded %}data-score="{{ exercise.score }}"{% else %}data-score="0"{% endif %}>
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                                            <h5 class="card-title text-center">
+                                                <a href="{% url 'submit_exercise' exercise.id %}">{{ exercise.title }}</a>
+                                            </h5>
+                                            <p class="card-text">{{ exercise.get_type_display }}</p>
+                                            {% if exercise.test.is_graded %}
+                                            <p class="card-text"><small class="text-muted">{% translate "Punti" %}: {{ exercise.score }}</small></p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-between">
+                                            {% if request.user.is_superuser %}
+                                                <span class="badge badge-secondary">{% translate "Completato" %}: {{ exercise.signed_count }}</span>
+                                                <span class="badge badge-info">{% translate "Valutazione Media" %}: {{ exercise.average_rating|default:'0'|floatformat:1 }}</span>
+                                            {% else %}
+                                                {% if exercise.id in completed_exercises %}
+                                                    <i class="fas fa-check text-success" title="{% translate 'Fatto' %}"></i>
+                                                {% elif exercise.id in signed_exercises %}
+                                                    <i class="fas fa-flag text-warning" title="{% translate 'Contrassegnato' %}"></i>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="table-view" id="exercise-table" style="display: none;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">{% translate "Titolo" %}</th>
+                        <th scope="col">{% translate "Tipologia" %}</th>
+                        <th scope="col">{% translate "Punteggio" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exercise in exercises %}
+                    <tr class="exercise-element mix" data-type="{{ exercise.type }}" {% if exercise.test.is_graded %}data-score="{{ exercise.score }}"{% else %}data-score="0"{% endif %}>
+                        <td>
+                            <a href="{% url 'submit_exercise' exercise.id %}">{{ exercise.title }}</a>
+                            {% if request.user.is_superuser %}
+                                <span class="badge badge-secondary">{% translate "Completato" %}: {{ exercise.signed_count }}</span>
+                                <span class="badge badge-info">{% translate "Valutazione Media" %}: {{ exercise.average_rating|default:'N/A'|floatformat:1 }}</span>
+                            {% endif %}
+                            {% if exercise.id in completed_exercises %}
+                                <i class="fas fa-check text-success" title="{% translate 'Fatto' %}"></i>
+                            {% elif exercise.id in signed_exercises %}
+                                <i class="fas fa-flag text-warning" title="{% translate 'Contrassegnato' %}"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ exercise.get_type_display }}</td>
+                        <td>{% if exercise.test.is_graded %}{{ exercise.score }}{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">{% translate "Non ci sono esercizi." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-      </div>
-      {% endif %}
+                        {% else %}
+                            <p class="mt-5">{% translate "Non ci sono esercizi." %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <div class="row cards-view" id="exercise-cards">
-    {% for exercise in exercises %}
-      <div class="col-sm-4 mb-4 exercise-card mix" data-type="{{ exercise.type }}" {% if exercise.test.is_graded %}data-score="{{ exercise.score }}"{% else %}data-score="0"{% endif %}>
-        <div class="card h-100">
-          <div class="card-body d-flex flex-column align-items-center justify-content-center">
-            <h5 class="card-title text-center">
-              <a href="{% url 'submit_exercise' exercise.id %}">{{ exercise.title }}</a>
-                {% if request.user.is_superuser %}
-                    <span class="badge badge-secondary">{{ exercise.signed_count }}</span>
-                    <span class="badge badge-info">{{ exercise.average_rating|default:'N/A'|floatformat:1 }}</span>
-                {% endif %}
-                {% if exercise.id in completed_exercises %}
-                    <i class="fas fa-check"></i>
-                {% elif exercise.id in signed_exercises %}
-                    <i class="fas fa-flag"></i>
-                {% endif %}
-            </h5>
-            <p class="card-text"><small class="text-muted">{{ exercise.get_type_display }}</small></p>
-            {% if exercise.test.is_graded %}<p class="card-text"><small class="text-muted">{% translate "Punti" %}: {{ exercise.score }}</small></p>{% endif %}
-          </div>
-        </div>
-      </div>
-    {% empty %}
-      <p>Non ci sono esercizi.</p>
-    {% endfor %}
-  </div>
-
-  <div class="table-view" id="exercise-table" style="display: none;">
-      <table class="table">
-          <thead>
-              <tr>
-                  <th scope="col">{% translate "Titolo" %}</th>
-                  <th scope="col">{% translate "Tipologia" %}</th>
-                  <th scope="col">{% translate "Punteggio" %}</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for exercise in exercises %}
-                  <tr class="exercise-element mix" data-type="{{ exercise.type }}" {% if exercise.test.is_graded %}data-score="{{ exercise.score }}"{% else %}data-score="0"{% endif %}>
-                      <td>
-                          <a href="{% url 'submit_exercise' exercise.id %}">{{ exercise.title }}</a>
-                          {% if request.user.is_superuser %}
-                              <span class="badge badge-secondary">{{ exercise.signed_count }}</span>
-                          {% endif %}
-                          {% if exercise.id in completed_exercises %}
-                              <i class="fas fa-check"></i>
-                          {% elif exercise.id in signed_exercises %}
-                              <i class="fas fa-flag"></i>
-                          {% endif %}
-                      </td>
-                      <td>{{ exercise.get_type_display }}</td>
-                      <td>{% if exercise.test.is_graded %}{{ exercise.score }}{% endif %}</td>
-                  </tr>
-              {% empty %}
-                  <tr>
-                      <td colspan="3">{% translate "Non ci sono esercizi." %}</td>
-                  </tr>
-              {% endfor %}
-          </tbody>
-      </table>
-  </div>
+</div>
 {% endblock %}
 
-{% block footer %}
-    <button type="button" onclick="location.href='{% url 'test_list_by_course' course_id=test.course.id %}'" class="btn btn-secondary">{% translate "Indietro" %}</button>
-{% endblock %}
-
-{% block custom_css %}
+{% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/mixitup@3/dist/mixitup.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -163,4 +237,3 @@ $(document).ready(function() {
 });
 </script>
 {% endblock %}
-

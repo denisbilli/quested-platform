@@ -1,87 +1,120 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load form_tags %}
+{% load static %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h1 class="mb-3 text-primary">{{ exercise.title }}</h1>
-            <h5 class="mb-3 text-muted">{% translate "Tipologia" %}: {{ exercise.get_type_display }}</h5>
-            {% if exercise.test.is_graded %}
-                <h3 class="mb-3 text-success">{% translate "Punti" %}: {{ exercise.score }}</h3>
-            {% endif %}
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <h5 class="mb-3 text-info">{% translate "Descrizione" %}:</h5>
-            <div class="text-justify">{{ exercise.description|safe }}</div>
-        </div>
-        <div class="col-md-6">
-            <h5>{% translate "Risposta" %}:</h5>
-            <form action="{% url 'submit_exercise' exercise.id %}" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {% if exercise.type == 'O' %}
-                    <div class="form-group">
-                      <textarea class="form-control" name="answer_text" rows="5">{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}</textarea>
+<div class="xs-pd-20-10">
+    <div class="min-height-200px">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="title">
+                        <h4>{{ exercise.title }}</h4>
                     </div>
-                {% elif exercise.type == 'M' %}
-                    {% for choice in exercise.choices.all %}
-                      <div class="form-check {% if choice.is_correct %}correct{% endif %}">
-                        <input class="form-check-input" type="radio" name="answer_choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" {% if submission and submission.answer_choice.id == choice.id %}checked{% endif %}>
-                        <label class="form-check-label" for="choice{{ forloop.counter }}">
-                          {{ choice.text }}
-                        </label>
-                      </div>
-                    {% endfor %}
-                {% elif exercise.type == 'C' %}
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'test_list_by_course' course_id=exercise.test.course.id %}">{{ exercise.test.course.name }}</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'exercise_list' exercise.test.id %}">{{ exercise.test.name }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ exercise.title }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 mb-30">
+                <div class="pd-20 card-box height-100-p">
+                    <!-- Dettagli dell'Esercizio -->
+                    <h5 class="text-blue mb-20">{% translate "Dettagli Esercizio" %}</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>{% translate "Tipologia" %}:</strong> {{ exercise.get_type_display }}</li>
+                        {% if exercise.test.is_graded %}
+                        <li><strong>{% translate "Punti" %}:</strong> {{ exercise.score }}</li>
+                        {% endif %}
+                    </ul>
+                    <!-- Footer in Sidebar -->
+                    <form action="{% url 'submit_exercise' exercise.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mt-4">
+                            {% if not exercise.test.is_graded %}
+                                <button type="button" onclick="showSolution()" class="btn btn-info btn-block mb-2" id="btnShowSolution">{% translate "Mostra soluzione" %}</button>
+                                <input type="checkbox" name="signed" id="checkboxSignExercise" style="display: none;" {% if user_exercise.signed %}checked{% endif %}>
+                                <button onclick="flagExercise(this.form)" class="btn {% if not user_exercise.signed %}btn-success{% else %}btn-danger{% endif %} btn-block mb-2" id="btnSignExercise">{% if not user_exercise.signed %}{% translate "Completato" %}{% else %}{% translate "Rimuovi completato" %}{% endif %}</button>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="mr-2">{% translate "Valuta l'esercizio" %}: </span>
+                                    <div class="star-rating">
+                                        <input id="star_none" type="radio" name="rating" value="0" onchange="this.form.submit()">
+                                        <label for="star_none" title="Cancella" style="margin-left: 20px;font-size: 1em;vertical-align: middle;line-height: 3em;">{% translate "Cancella" %}</label>
+                                        {% for star in "54321"|make_list %}
+                                            <input id="star{{ star }}" type="radio" name="rating" value="{{ star }}" {% if user_exercise.stars == star|to_int %}checked{% endif %} onchange="this.form.submit()">
+                                            <label for="star{{ star }}" title="{{ star }} stars">&#9733;</label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary btn-block mb-2" id="btnSendAnswer">{% translate "Invia Risposta" %}</button>
+                            {% endif %}
+                            <button type="button" onclick="location.href='{% url 'exercise_list' exercise.test.id %}'" class="btn btn-secondary btn-block">{% translate "Indietro" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 mb-30">
+                <div class="card-box">
+                    <div class="pd-20">
+                        <h5 class="text-info mb-20">{% translate "Descrizione" %}:</h5>
+                        <div class="text-justify mb-4">{{ exercise.description|safe }}</div>
+                        <h5 class="text-info mb-20">{% translate "Risposta" %}:</h5>
+                        <form action="{% url 'submit_exercise' exercise.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% if exercise.type == 'O' %}
+                                <div class="form-group">
+                                    <textarea class="form-control" name="answer_text" rows="5">{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}</textarea>
+                                </div>
+                            {% elif exercise.type == 'M' %}
+                                {% for choice in exercise.choices.all %}
+                                <div class="form-check {% if choice.is_correct %}correct{% endif %}">
+                                    <input class="form-check-input" type="radio" name="answer_choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" {% if submission and submission.answer_choice.id == choice.id %}checked{% endif %}>
+                                    <label class="form-check-label" for="choice{{ forloop.counter }}">
+                                        {{ choice.text }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            {% elif exercise.type == 'C' %}
 <pre>
-<code class="language-cpp" id="answer">#include &#60;iostream&#62;
+<code class="language-cpp" id="answer">#include &lt;iostream&gt;
 
 int main() {
     // {% translate "Scrivi qui il tuo esercizio" %}
     return 0;
 }</code>
 </pre>
-                {% if exercise.test.is_graded %}
-                    <!-- <button type="button" onclick="pasteCode()" class="btn btn-primary">{% translate "Incolla il tuo codice" %}</button> -->
-                    <div class="custom-file mt-3">
-                        <input type="file" class="custom-file-input" id="submitFile" name="file" accept=".cpp">
-                        <label class="custom-file-label" for="submitFile">{% translate "Scegli il file" %}</label>
+                                {% if exercise.test.is_graded %}
+                                    <!-- <button type="button" onclick="pasteCode()" class="btn btn-primary">{% translate "Incolla il tuo codice" %}</button> -->
+                                    <div class="custom-file mt-3">
+                                        <input type="file" class="custom-file-input" id="submitFile" name="file" accept=".cpp">
+                                        <label class="custom-file-label" for="submitFile">{% translate "Scegli il file" %}</label>
+                                    </div>
+                                {% endif %}
+                                <input type="hidden" name="answer_text" id="answer_text" value="{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}">
+                            {% elif exercise.type == 'D' %}
+                                <div class="form-group">
+                                    <textarea class="form-control" name="answer_text" rows="5" {% if not exercise.test.is_graded %}id="open_answer" style="display: none"{% endif %}>{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}</textarea>
+                                </div>
+                            {% endif %}
+                        </form>
                     </div>
-                {% endif %}
-                <input type="hidden" name="answer_text" id="answer_text" value="{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}">
-                {% elif exercise.type == 'D' %}
-                    <div class="form-group">
-                      <textarea class="form-control" name="answer_text" rows="5" {% if not exercise.test.is_graded %}id="open_answer" style="display: none"{% endif %}>{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}</textarea>
-                    </div>
-                {% endif %}
-            </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-
-{% block footer %}
-    {% if not exercise.test.is_graded %}
-        <button type="button" onclick="showSolution()" class="btn btn-info" id="btnShowSolution">{% translate "Mostra soluzione" %}</button>
-        <input type="checkbox" name="signed" id="checkboxSignExercise" style="display: none;" {% if user_exercise.signed %}checked{% endif %}>
-        <button onclick="flagExercise(this.form)" class="btn {% if not user_exercise.signed %}btn-success{% else %}btn-danger{% endif %}" id="btnSignExercise">{% if not user_exercise.signed %}{% translate "Contrassegna" %}{% else %}{% translate "Rimuovi contrassegno" %}{% endif %}</button>
-        <div class="d-flex align-items-center">
-            <span class="mr-3">{% translate "Ti è sembrato facile questo esercizio?" %}</span>
-            <div class="star-rating">
-                {% for star in "54321"|make_list %}
-                    <input id="star{{ star }}" type="radio" name="rating" value="{{ star }}" {% if user_exercise.stars == star|to_int %}checked{% endif %} onchange="this.form.submit()">
-                    <label for="star{{ star }}" title="{{ star }} stars">&#9733;</label>
-                {% endfor %}
-            </div>
-        </div>
-    {% else %}
-        <button type="submit" class="btn btn-primary" id="btnSendAnswer">{% translate "Invia Risposta" %}</button>
-    {% endif %}
-    <button type="button" onclick="location.href='{% url 'exercise_list' exercise.test.id %}'" class="btn btn-secondary">{% translate "Indietro" %}</button>
 {% endblock %}
 
 
@@ -136,7 +169,10 @@ div.form-check {
     color: gold;
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.0.0/mermaid.min.js"></script>
+{% endblock %}
+
+{% block custom_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js" integrity="sha512-6a80OTZVmEJhqYJUmYd5z8yHUCDlYnj6q9XwB/gKOEyNQV/Q8u+XeSG59a2ZKFEHGTYzgfOQKYEBtrZV7vBr+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     var is_graded = "{{ exercise.test.is_graded|escapejs }}" == 'False' ? false : true;
 
@@ -184,6 +220,20 @@ div.form-check {
     }
 
     $(document).ready(function() {
+        function loadMermaidTheme() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const mermaidTheme = isDarkMode ? 'dark' : 'default';
+
+            if ($(".mermaid").length > 0) {
+                mermaid.initialize({
+                    "flowchart": {"defaultRenderer": "elk"},
+                    startOnLoad: true,
+                    theme: mermaidTheme
+                });
+                mermaid.init(); // Re-renderizza i grafici
+            }
+        }
+
         const codeElement = document.querySelector('#answer');
         const hiddenInput = document.querySelector('#answer_text');
         const openAnswer = $('#open_answer');
@@ -200,13 +250,15 @@ div.form-check {
             openAnswer.hide();
         }
 
-        if(mermaidElements > 0) {
-            // diagrammi di flusso
-            mermaid.initialize({
-                startOnLoad: true,
-                theme: 'normal'
-            });
-        }
+        // Initial load for Mermaid theme
+        loadMermaidTheme();
+
+        // Optional: Listen for theme changes
+        const observer = new MutationObserver(loadMermaidTheme);
+        observer.observe(document.body, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
 
         // on file input change
         $('#submitFile').on('change', function () {

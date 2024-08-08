@@ -1,36 +1,76 @@
-<!-- course_list.html -->
 {% extends 'base.html' %}
 {% load i18n %}
 {% load course_filters %}
+{% load static %}
 
 {% block content %}
-{% if courses %}
-  <table class="table mt-5">
-    <thead>
-      <tr>
-        <th scope="col" style="width: 30%;">{% translate "Corso" %}</th>
-        <th scope="col">{% translate "Descrizione" %}</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Assumi che 'user' sia l'utente attualmente autenticato passato alla vista -->
-      {% for course in courses %}
-          <tr>
-              <td class="align-middle">{{ course.name }}</td>
-              <td class="align-middle">{{ course.description }}</td>
-              <td class="align-middle">
-                  {% if course|is_student_enrolled:user %}
-                      <a href="{% url 'test_list_by_course' course.id %}" class="btn btn-primary">{% translate "Entra" %}</a>
-                  {% elif course.enabled %}
-                      <a href="{% url 'enroll_in_course' course.id %}" class="btn btn-secondary">{% translate "Iscriviti" %}</a>
-                  {% endif %}
-              </td>
-          </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <p>{% translate "Nessun corso disponibile." %}</p>
-{% endif %}
+<div class="xs-pd-20-10">
+    <div class="min-height-200px">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="title">
+                        <h4>{% translate "Lista Corsi" %}</h4>
+                    </div>
+                    <nav aria-label="breadcrumb" role="navigation">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{% translate "Lista Corsi" %}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-box mb-10">
+            <div class="pd-20 d-flex stats-container">
+                <h4 class="text-blue h4">{% translate "Corsi Disponibili" %}</h4>
+            </div>
+            <div class="pb-20" style="padding: 20px">
+                {% if courses %}
+                    <div class="card-deck mb-4">
+                        {% for course in courses %}
+                        <div class="card mb-4" style="min-width: 18rem;">
+                            {% if course.image %}
+                            <img class="card-img-top" src="{{ course.image.url }}" alt="{{ course.name }}">
+                            {% else %}
+                            <img class="card-img-top" src="{% static 'vendors/images/img4.jpg' %}" alt="{{ course.name }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ course.name }}</h5>
+                                <p class="card-text">{{ course.description }}</p>
+                                {% if course|is_student_enrolled:user %}
+                                    <a href="{% url 'test_list_by_course' course.id %}" class="btn btn-primary">{% translate "Entra" %}</a>
+                                {% elif course.enabled %}
+                                    <a href="{% url 'enroll_in_course' course.id %}" class="btn btn-secondary">{% translate "Iscriviti" %}</a>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                {% if course.user_enrollment %}
+                                    <small class="text-muted">{% translate "Iscritto il" %} {{ course.user_enrollment.0.enrollment_date|date:"d M Y" }}</small>
+                                {% else %}
+                                    <small class="text-muted">{% translate "Non iscritto" %}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <!-- Aggiungi placeholder per mantenere l'allineamento -->
+                        {% for _ in num_placeholders|range_filter %}
+                        <div class="card mb-4" style="visibility: hidden;">
+                            <img class="card-img-top" src="{% static 'vendors/images/img4.jpg' %}" alt="Placeholder">
+                            <div class="card-body">
+                                <h5 class="card-title">Placeholder</h5>
+                                <p class="card-text">This is a placeholder card.</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>{% translate "Nessun corso disponibile." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

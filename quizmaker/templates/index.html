@@ -1,0 +1,350 @@
+{% extends 'base_generic.html' %}
+
+{% load static %}
+
+{% block head_scripts %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+{% endblock %}
+
+{% block content %}
+
+<!-- Swiper -->
+<div class="swiper mySwiper">
+  <div class="swiper-wrapper">
+
+    <!-- Hero Section -->
+    <div class="swiper-slide hero-section">
+      <div id="particles-js"></div>
+      <div class="h-100 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+          <h1 class="display-4 text-white mb-3">SnapBiz is Coming Soon</h1>
+          <p class="lead text-light mb-20">Are you a photographer? Join our mailing list to stay in the loop and get early access.</p>
+          <form action="{% url 'photobiz-index' %}" method="post" class="form-inline justify-content-center mt-5">
+            {% csrf_token %}
+            {% if form.email.errors %}
+              {% for error in form.email.errors %}
+                <div class="error">{{ error }}</div>
+              {% endfor %}
+            {% endif %}
+            {% if messages %}
+              {% for message in messages %}
+                  <div class="{{ message.tags }}">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+            <input type="email" name="email" class="form-control mb-2 mr-sm-2" placeholder="Enter your email address" required>
+            <button type="submit" class="btn btn-primary mb-2">Notify Me</button>
+        </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem Statement -->
+    <div class="swiper-slide statement">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 mx-auto text-center">
+            <h2 class="display-4 text-white mb-3">The Challenge</h2>
+            <p class="lead text-light mb-20">Many photographers struggle with managing tasks, schedules, and client collaboration, leading to missed opportunities and decreased productivity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="swiper-slide footer">
+      <div class="container text-center py-5">
+        <div class="row">
+          <div class="col-md-8 mx-auto text-center">
+            <h2 class="display-4 mb-3">Be prepared!<br />SnapBiz is Coming!</h2>
+            <p class="lead mb-20">&copy; 2024 SnapBiz. All Rights Reserved.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="swiper-pagination"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+  var mySwiper = new Swiper('.mySwiper', {
+    direction: 'vertical',
+    slidesPerView: 1,
+    spaceBetween: 30,
+    mousewheel: true,
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true, // La navigazione da tastiera funziona solo quando le slide sono nel viewport
+      pageUpDown: true, // Abilita la navigazione con i tasti Page Up e Page Down
+    },
+  });
+
+  document.addEventListener('keydown', function(e) {
+    switch(e.keyCode) {
+      case 36: // Tasto Home
+        mySwiper.slideTo(0); // Va alla prima slide
+        break;
+      case 35: // Tasto End
+        mySwiper.slideTo(mySwiper.slides.length - 1); // Va all'ultima slide
+        break;
+    }
+  });
+</script>
+
+<script>
+particlesJS("particles-js", {
+  "particles": {
+    "number": {
+      "value": 50,
+      "density": {
+        "enable": true,
+        "value_area": 800
+      }
+    },
+    "color": {
+      "value": "#ffffff"
+    },
+    "opacity": {
+      "value": 0.5,
+      "random": true,
+      "anim": {
+        "enable": true,
+        "speed": 0.1,
+        "opacity_min": 0.1,
+        "sync": false
+      }
+    },
+    line_linked: {
+      enable: false,
+    },
+    "size": {
+      "value": 15,
+      "random": true
+    },
+    "move": {
+      "enable": true,
+      "speed": 1,
+      "direction": "none",
+      "random": true,
+      "straight": false,
+      "out_mode": "out",
+      "bounce": false
+    }
+  },
+  "interactivity": {
+    "detect_on": "none",
+    "events": {
+      "onhover": {
+        "enable": false,
+        "mode": "repulse"
+      },
+      "onclick": {
+        "enable": false // Disabilita gli eventi al clic
+      }
+    }
+  },
+  "retina_detect": true
+});
+</script>
+
+<style>
+/* Base Styles */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* Swiper Styles */
+.swiper {
+  width: 100%;
+  height: calc(100vh - 70px);
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  font-size: 14px;
+  background: #FFFFFF; /* Sfondo base per contenuto chiaro */
+  color: #000000; /* Testo primario */
+  padding:30px;
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: linear-gradient(rgba(0,0,0,.8), rgba(0,0,0,.8)), url('{% static '/src/images/hero-background.jpg' %}');
+  background-size: cover;
+  background-position: center center;
+}
+
+#particles-js {
+  position: absolute; /* O 'fixed', a seconda del comportamento desiderato */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Assicurati che sia sotto il contenuto */
+}
+
+.particles-js-canvas-el {
+  width: 200vmax !important;
+  height: 100vmax !important;
+}
+
+/* Problem Statement */
+.statement {
+  background: #000; /* Un colore chiaro per differenziare le sezioni */
+  background-size: cover;
+  background-position: center center;
+}
+
+.footer {
+  background: #fff; /* Un colore chiaro per differenziare le sezioni */
+  background-size: cover;
+  background-position: center center;
+  color: #000;
+}
+
+/* Typography */
+.headline {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700; /* Bold */
+  color: #333333; /* Testo scuro per titoli */
+  margin-bottom: 1rem; /* Spazio sotto il titolo */
+}
+
+.subheadline {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 300; /* Light */
+  margin-bottom: 2rem; /* Spazio sotto il sottotitolo */
+}
+
+/* Stile generale per i messaggi di errore */
+.error {
+  color: #d32f2f; /* Rosso scuro per gli errori */
+  background-color: #ffcdd2; /* Rosso chiaro per lo sfondo */
+  border: 1px solid #d32f2f; /* Bordo rosso scuro */
+  border-radius: 4px; /* Angoli arrotondati */
+  padding: 10px; /* Spazio all'interno del messaggio */
+  margin-bottom: 20px; /* Spazio sotto il messaggio */
+  width: 100%; /* Larghezza massima */
+  text-align: center; /* Testo centrato */
+}
+
+/* Stile per i messaggi di conferma */
+.success {
+  color: #388e3c; /* Verde scuro per le conferme */
+  background-color: #c8e6c9; /* Verde chiaro per lo sfondo */
+  border: 1px solid #388e3c; /* Bordo verde scuro */
+  border-radius: 4px; /* Angoli arrotondati */
+  padding: 10px; /* Spazio all'interno del messaggio */
+  margin-bottom: 20px; /* Spazio sotto il messaggio */
+  width: 100%; /* Larghezza massima */
+  text-align: center; /* Testo centrato */
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background-color: #5D93E1; /* Colore primario del tuo brand */
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #4a7abd; /* Versione più scura per l'hover */
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  border: 1px solid #e1e1e1; /* Bordi sottili per le card */
+  border-radius: 8px; /* Bordi arrotondati */
+  margin: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombra leggera per profondità */
+}
+
+.card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card p {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #666;
+}
+
+.card-img-top {
+  width: 100%; /* Assicura che l'immagine copra tutta la larghezza della card */
+  height: auto; /* Mantiene le proporzioni dell'immagine */
+  border-radius: 8px 8px 0 0; /* Arrotonda solo gli angoli superiori dell'immagine */
+  object-fit: cover; /* Assicura che l'immagine copra l'area designata senza essere distorta */
+}
+
+/* AI Request Manager Section */
+.ai-request-manager {
+  background-image: linear-gradient(120deg, #cfd9df 0%, #e2ebf0 100%);
+}
+
+/* Social Proof */
+.social-proof {
+  background: #f7f7f7; /* Colore neutro per enfatizzare il contenuto della sezione */
+}
+
+/* FAQs */
+.faqs {
+  background: #ffffff; /* Sfondo chiaro per una lettura agevole */
+}
+
+/* Final CTA */
+.final-cta {
+  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .headline {
+    font-size: 1.75rem; /* Riduci la dimensione per schermi più piccoli */
+  }
+
+  .subheadline {
+    font-size: 1.25rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1.5rem; /* Pulsanti più piccoli per risparmiare spazio */
+  }
+
+  .hero-text, .ai-content {
+    padding-left: 1rem; /* Riduci il padding per i contenuti del testo */
+  }
+}
+
+/* Additional Styles */
+/* Aggiungi qui eventuali stili aggiuntivi specifici per la tua applicazione */
+</style>
+{% endblock %}

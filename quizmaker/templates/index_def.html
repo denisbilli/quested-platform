@@ -1,0 +1,439 @@
+{% extends 'base_generic.html' %}
+
+{% load static %}
+
+{% block head_scripts %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+{% endblock %}
+
+{% block swiper %}
+
+  <!-- Swiper -->
+<div class="swiper mySwiper">
+  <div class="swiper-wrapper">
+
+    <!-- Hero Section -->
+    <div class="swiper-slide hero-section">
+      <div class="container-fluid">
+        <div class="row hero-content">
+          <div class="col-md-6 text-center hero-text">
+            <h1 class="headline mb-3">Transform Your Photography Business with SnapBiz</h1>
+            <p class="subheadline mb-4">Streamline your workflow and elevate your client collaboration with our comprehensive tool.</p>
+            <a href="#" class="btn btn-primary cta-button">Start Your Free Trial</a>
+          </div>
+          <div class="col-md-6 hero-image">
+            <img src="{% static '/src/images/screenshot.png' %}" alt="SnapBiz's screenshot - Hero section">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem Statement -->
+    <div class="swiper-slide problem-statement">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 mx-auto text-center">
+            <h2 class="mb-3">The Challenge</h2>
+            <p>Many photographers struggle with managing tasks, schedules, and client collaboration, leading to missed opportunities and decreased productivity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solution Overview -->
+    <div class="swiper-slide solution-overview">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-10 mx-auto text-center">
+            <h2 class="mt-5 mb-3">SnapBiz: Your All-in-One Solution</h2>
+            <p>Introducing Task Management, Calendar, and Collaboration features designed to address your photography business needs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Deep Dive -->
+    <div class="swiper-slide feature-deep-dive">
+      <div class="container">
+        <div class="row d-flex align-items-stretch">
+          <!-- Task Management -->
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="{% static '/src/images/task-management.png' %}" alt="Task Management" class="card-img-top">
+              <div class="card-body">
+                <h3 class="card-title">Task Management</h3>
+                <p class="card-text">Streamline your workflow with our comprehensive task management system, allowing you to track assignments and communicate efficiently.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="{% static '/src/images/calendar.png' %}" alt="Calendar" class="card-img-top">
+              <div class="card-body">
+                <h3 class="card-title">Calendar</h3>
+                <p class="card-text">Never miss a deadline or appointment with our intuitive calendar, designed for the busy photographer.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collaboration -->
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="{% static '/src/images/collaboration.png' %}" alt="Collaboration" class="card-img-top">
+              <div class="card-body">
+                <h3 class="card-title">Collaboration</h3>
+                <p class="card-text">Enhance your client relationships with seamless file sharing and real-time feedback within our collaboration module.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Request Manager Section -->
+    <div class="swiper-slide ai-request-manager">
+      <div class="container-fluid ai-section">
+        <div class="row align-items-center ai-content" style="position: relative; z-index: 2;">
+          <div class="col-md-6 text-center hero-text" style="padding-left: 5rem">
+            <h2 class="headline mb-3">AI Request Manager</h2>
+            <p class="subheadline mb-4">Overwhelmed by the influx of emails? Introducing the AI Request Manager, a revolutionary module powered by Artificial Intelligence, designed to automatically categorize and integrate your requests directly into SnapBiz. Say goodbye to manual sorting and hello to efficiency, with AI at your disposal to streamline your workflow like never before.</p>
+          </div>
+          <div class="col-md-6 hero-image">
+            <img src="{% static '/src/images/ai-manager-image.png' %}" alt="AI Request Manager" class="img-fluid rounded">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Proof -->
+    <div class="swiper-slide social-proof">
+      <div class="row social-proof">
+        <div class="col-md-8 mx-auto text-center">
+          <h2 class="mt-5 mb-3">Trusted by Photographers Worldwide</h2>
+          <!-- Qui puoi inserire testimonianze, case studies, e trust badges -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing and Plans -->
+    <div class="swiper-slide pricing-plans">
+      <div class="container">
+        <div class="row mb-30">
+          <div class="col-md-12 text-center">
+            <h2 class="mt-5 mb-3">Choose Your Plan</h2>
+            <p class="lead text-center">Empower your photography business with SnapBiz. Whether you're flying solo or part of a large team, our tailored subscription plans are designed to fit your unique needs. Explore below to find the perfect match for you.</p>
+          </div>
+        </div>
+
+        <div class="row align-items-center justify-content-center">
+          <!-- Base Package -->
+          <div class="col-md-4 mb-4">
+            <div class="card h-100" style="font-size: 0.8em">
+              <div class="card-body d-flex flex-column justify-content-between">
+                <h3 class="card-title text-center">Base</h3>
+                <p class="card-price text-center">€12 / user / month</p>
+                <ul class="card-features list-unstyled mt-3 mb-4">
+                  <li>Task and Project Management</li>
+                  <li>Appointment Calendar</li>
+                  <li>Email Support</li>
+                </ul>
+                <a href="#" class="btn btn-outline-primary btn-block">Start Free Trial</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Advanced Package -->
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-lg">
+              <div class="card-body d-flex flex-column justify-content-between">
+                <h3 class="card-title text-center">Advanced</h3>
+                <p class="card-price text-center">€20 / user / month</p>
+                <ul class="card-features list-unstyled mt-3 mb-4">
+                  <li>All from Base</li>
+                  <li>Team Collaboration</li>
+                  <li>Document Storage Space</li>
+                  <li>Priority Support</li>
+                </ul>
+                <a href="#" class="btn btn-primary btn-block">Get Started</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Premium Package -->
+          <div class="col-md-4 mb-4">
+            <div class="card h-100" style="font-size: 0.8em">
+              <div class="card-body d-flex flex-column justify-content-between">
+                <h3 class="card-title text-center">Premium</h3>
+                <p class="card-price text-center">€30 / user / month</p>
+                <ul class="card-features list-unstyled mt-3 mb-4">
+                  <li>All from Advanced</li>
+                  <li>AI Request Manager</li>
+                  <li>Unlimited Storage</li>
+                  <li>Dedicated Support and Team Training</li>
+                </ul>
+                <a href="#" class="btn btn-outline-primary btn-block">Get Started</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center mt-4">
+            <p class="lead text-center">Ready to take the next step? Dive into SnapBiz with our free trial, and experience firsthand how our platform can transform your workflow. If you have any questions or need assistance, our dedicated support team is just an email or phone call away.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- FAQs -->
+    <div class="swiper-slide faqs">
+      <div class="row faqs">
+        <div class="col-md-8 mx-auto text-center">
+          <h2 class="mt-5 mb-3">Frequently Asked Questions</h2>
+          <!-- Qui puoi inserire le domande frequenti con le rispettive risposte -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Final CTA -->
+    <div class="swiper-slide final-cta">
+      <div class="row final-cta">
+        <div class="col-md-12 text-center">
+          <h2 class="mt-5 mb-3">Ready to Transform Your Photography Business?</h2>
+          <a href="#" class="btn btn-primary cta-button">Get Started Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- Considera di mantenere il footer fuori dallo swiper se desideri che rimanga accessibile senza scorrimento -->
+    <div class="row footer">
+      <div class="col-md-12 text-center">
+        <p>Contact us at <a href="mailto:support@snapbiz.com">support@snapbiz.com</a> or call us at (123) 456-7890</p>
+        <!-- Aggiungi qui i link ai social media, la politica sulla privacy e i termini di servizio -->
+      </div>
+    </div>
+  </div>
+  <!-- Add Pagination -->
+  <div class="swiper-pagination"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  var mySwiper = new Swiper('.mySwiper', {
+    direction: 'vertical',
+    slidesPerView: 1,
+    spaceBetween: 30,
+    mousewheel: true,
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true, // La navigazione da tastiera funziona solo quando le slide sono nel viewport
+      pageUpDown: true, // Abilita la navigazione con i tasti Page Up e Page Down
+    },
+  });
+
+  document.addEventListener('keydown', function(e) {
+    switch(e.keyCode) {
+      case 36: // Tasto Home
+        mySwiper.slideTo(0); // Va alla prima slide
+        break;
+      case 35: // Tasto End
+        mySwiper.slideTo(mySwiper.slides.length - 1); // Va all'ultima slide
+        break;
+    }
+  });
+</script>
+
+<style>
+/* Base Styles */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* Swiper Styles */
+.swiper {
+  width: 100%;
+  height: calc(100vh - 70px);
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  font-size: 14px;
+  background: #FFFFFF; /* Sfondo base per contenuto chiaro */
+  color: #000000; /* Testo primario */
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+  background-size: cover;
+  background-position: center center;
+}
+
+/* Problem Statement */
+.problem-statement {
+  background: #f5f7fa; /* Un colore chiaro per differenziare le sezioni */
+  background-size: cover;
+  background-position: center center;
+}
+
+/* Solution Overview */
+.solution-overview {
+  background: #e8effa; /* Una tonalità leggermente diversa per la varietà */
+  background-size: cover;
+  background-position: center center;
+}
+
+/* Feature Deep Dive */
+.feature-deep-dive {
+  background: #333; /* Sfondo scuro per una maggiore enfasi */
+  color: #ffffff; /* Testo chiaro per contrasto */
+  background-size: cover;
+  background-position: center center;
+}
+
+/* Pricing and Plans */
+.pricing-plans {
+  background-image: linear-gradient(120deg, #d4e0f0 0%, #a9c2d8 100%);
+  background-size: cover;
+  background-position: center center;
+}
+
+/* Typography */
+.headline {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700; /* Bold */
+  color: #333333; /* Testo scuro per titoli */
+  margin-bottom: 1rem; /* Spazio sotto il titolo */
+}
+
+.subheadline {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 300; /* Light */
+  margin-bottom: 2rem; /* Spazio sotto il sottotitolo */
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background-color: #5D93E1; /* Colore primario del tuo brand */
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #4a7abd; /* Versione più scura per l'hover */
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  border: 1px solid #e1e1e1; /* Bordi sottili per le card */
+  border-radius: 8px; /* Bordi arrotondati */
+  margin: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombra leggera per profondità */
+}
+
+.card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.card p {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #666;
+}
+
+.card-img-top {
+  width: 100%; /* Assicura che l'immagine copra tutta la larghezza della card */
+  height: auto; /* Mantiene le proporzioni dell'immagine */
+  border-radius: 8px 8px 0 0; /* Arrotonda solo gli angoli superiori dell'immagine */
+  object-fit: cover; /* Assicura che l'immagine copra l'area designata senza essere distorta */
+}
+
+/* AI Request Manager Section */
+.ai-request-manager {
+  background-image: linear-gradient(120deg, #cfd9df 0%, #e2ebf0 100%);
+}
+
+/* Social Proof */
+.social-proof {
+  background: #f7f7f7; /* Colore neutro per enfatizzare il contenuto della sezione */
+}
+
+/* FAQs */
+.faqs {
+  background: #ffffff; /* Sfondo chiaro per una lettura agevole */
+}
+
+/* Final CTA */
+.final-cta {
+  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+/* Footer */
+.footer {
+  background: #303030; /* Sfondo scuro per il footer */
+  color: #fff; /* Testo chiaro per contrasto */
+}
+
+.footer a {
+  color: #ffffff; /* I link devono essere visibili */
+  text-decoration: none; /* Nessun sottolineamento per i link */
+}
+
+.footer a:hover {
+  text-decoration: underline; /* Sottolineamento al hover per indicare interattività */
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .headline {
+    font-size: 1.75rem; /* Riduci la dimensione per schermi più piccoli */
+  }
+
+  .subheadline {
+    font-size: 1.25rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1.5rem; /* Pulsanti più piccoli per risparmiare spazio */
+  }
+
+  .hero-text, .ai-content {
+    padding-left: 1rem; /* Riduci il padding per i contenuti del testo */
+  }
+}
+
+/* Additional Styles */
+/* Aggiungi qui eventuali stili aggiuntivi specifici per la tua applicazione */
+</style>
+
+{% endblock %}
