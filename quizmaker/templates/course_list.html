@@ -42,7 +42,10 @@
                                 {% if course|is_student_enrolled:user %}
                                     <a href="{% url 'test_list_by_course' course.id %}" class="btn btn-primary">{% translate "Entra" %}</a>
                                 {% elif course.enabled %}
-                                    <a href="{% url 'enroll_in_course' course.id %}" class="btn btn-secondary">{% translate "Iscriviti" %}</a>
+                                    <form method="post" action="{% url 'enroll_in_course' course.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-secondary">{% translate "Iscriviti" %}</button>
+                                    </form>
                                 {% endif %}
                             </div>
                             <div class="card-footer">

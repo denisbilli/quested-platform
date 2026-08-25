@@ -1,0 +1,20 @@
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["*/migrations/*", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "DJ"]
+ignore = [
+    "E501",  # line length is handled by the formatter
+    "B008",  # Django settings/field defaults legitimately call functions at import
+    # Existing schema uses null=True on text fields; changing it now would mean a
+    # data migration for no functional gain.
+    "DJ001",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "quizmaker.settings"
+python_files = ["test_*.py", "tests.py"]
+pythonpath = ["quizmaker"]
+testpaths = ["quizmaker"]

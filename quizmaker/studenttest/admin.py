@@ -1,25 +1,25 @@
 # myapp/admin.py
 
 import copy
+import logging
 
-from django.contrib.admin import helpers, SimpleListFilter
-from django.template.response import TemplateResponse
-from django.urls import path
 from django.contrib import admin, messages
-from django.shortcuts import render
-from django.utils.html import format_html
-from django.urls import reverse
+from django.contrib.admin import SimpleListFilter, helpers
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils.decorators import method_decorator
-from django.http import HttpResponseRedirect
-from django.db import transaction
-
-from .forms import AssignTestsToCourseForm
-from .models import *
-
-from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import path, reverse
+from django.utils.decorators import method_decorator
+from django.utils.html import format_html
+from django.views.generic.detail import DetailView
+
+from .forms import AssignTestsToCourseForm
+from .models import Choice, Course, Enrollment, Exercise, Submission, Test, UserExercise
+
+logger = logging.getLogger(__name__)
 
 
 class ExerciseInline(admin.StackedInline):  # This allows you to add/edit Exercises directly from the Test admin page.
@@ -123,14 +123,22 @@ class EnrollmentAdmin(admin.ModelAdmin):
 @admin.register(Exercise)
 class ExerciseAdmin(admin.ModelAdmin):
     inlines = [ChoiceInline]
-    list_display = ('title', 'test', 'type', 'enabled', 'score', 'duplicate_link')
+    list_display = ('title', 'test', 'type', 'enabled', 'score')
     list_filter = [UserTestFilter, 'type']
     search_fields = ['title']
+    actions = ['duplicate_exercise']
 
-    def duplicate_link(self, obj):
-        return format_html('<a href="{}">Duplicate</a>', reverse('duplicate_exercise', args=[obj.pk]))
-
-    duplicate_link.short_description = 'Duplicate Exercise'
+    @admin.action(description='Duplicate Exercise')
+    def duplicate_exercise(self, request, queryset):
+        for exercise in queryset:
+            new_exercise = copy.deepcopy(exercise)
+            new_exercise.pk = None
+            new_exercise.enabled = False
+            new_exercise.creator = request.user
+            new_exercise.save()
+        self.message_user(
+            request, f'{queryset.count()} exercise(s) duplicated.', messages.SUCCESS
+        )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -161,7 +169,7 @@ class TestAdmin(admin.ModelAdmin):
     def duplicate_test(self, request, queryset):
         for test in queryset:
             try:
-                print(f'Test {test.id} has {test.exercises.count()} exercises')
+                logger.debug('Test %s has %s exercises', test.id, test.exercises.count())
                 with transaction.atomic():
                     # Duplicate the test
                     test_copy = copy.deepcopy(test)
@@ -171,7 +179,7 @@ class TestAdmin(admin.ModelAdmin):
 
                     # Duplicate the exercises
                     exercises = Exercise.objects.filter(test=test)
-                    print(f'Found {test.exercises.count()} exercises to duplicate')
+                    logger.debug('Duplicating %s exercises', exercises.count())
                     for exercise in exercises:
                         new_exercise = copy.deepcopy(exercise)
                         new_exercise.pk = None
@@ -198,7 +206,6 @@ class TestAdmin(admin.ModelAdmin):
 
     @admin.action(description='Assign tests to a course')
     def assign_tests_to_course(self, request, queryset):
-        print(request.POST)
         if 'apply' in request.POST:
             form = AssignTestsToCourseForm(request.POST)
             if form.is_valid():

@@ -1,12 +1,10 @@
-import datetime
-
 from django.conf import settings
-from django.db import models
 from django.contrib.auth.models import User
-from django.utils.text import slugify
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 def user_directory_path(instance, filename):
@@ -23,12 +21,18 @@ class Course(models.Model):
     visible_to = models.ManyToManyField(User, blank=True, related_name='visible_courses')
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
     def is_student_enrolled(self, user):
         """ Controlla se l'utente è iscritto al corso. """
         return Enrollment.objects.filter(student=user, course=self).exists()
 
-    def __str__(self):
-        return self.name
+    def is_visible_to(self, user):
+        """An empty `visible_to` means the course is open to every user."""
+        if not self.visible_to.exists():
+            return True
+        return self.visible_to.filter(pk=user.pk).exists()
 
 
 class Enrollment(models.Model):
@@ -55,6 +59,18 @@ class Test(models.Model):
 
     def __str__(self):
         return self.name
+
+    def is_visible_to(self, user):
+        """Visible when explicitly shared, or when shared with nobody in particular.
+
+        A test also inherits its course's restrictions: a student who cannot see
+        the course must not reach its tests by guessing a test id.
+        """
+        if self.course is not None and not self.course.is_visible_to(user):
+            return False
+        if not self.visible_to.exists():
+            return True
+        return self.visible_to.filter(pk=user.pk).exists()
 
 
 class Exercise(models.Model):
@@ -87,6 +103,9 @@ class UserExercise(models.Model):
     class Meta:
         unique_together = (('user', 'exercise'),)
 
+    def __str__(self):
+        return f"{self.user.username} - {self.exercise.title}"
+
 
 class Choice(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name='choices', blank=True, null=True)
@@ -103,6 +122,15 @@ class Submission(models.Model):
     answer_text = models.TextField(blank=True, null=True)
     answer_choice = models.ForeignKey(Choice, on_delete=models.CASCADE, blank=True, null=True)
     file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    class Meta:
+        # The app already assumes one submission per user per exercise; enforce it
+        # so a race cannot create a second one.
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "exercise"], name="unique_submission_per_user_exercise"
+            )
+        ]
 
     def __str__(self):
         return f"{self.user.username}'s submission for {self.exercise.title}"

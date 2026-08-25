@@ -136,9 +136,13 @@ GitHub.sublime-settings
 !.vscode/launch.json
 !.vscode/extensions.json
 .history
-/.idea/vcs.xml
+.idea/
 
 # Configurazione Django
-settings.py
+.env
 log.txt
 nohup.out
+staticfiles/
+
+# macOS #
+.DS_Store

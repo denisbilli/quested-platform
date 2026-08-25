@@ -19,7 +19,7 @@
         <div class="text-center">
           <h1 class="display-4 text-white mb-3">SnapBiz is Coming Soon</h1>
           <p class="lead text-light mb-20">Are you a photographer? Join our mailing list to stay in the loop and get early access.</p>
-          <form action="{% url 'photobiz-index' %}" method="post" class="form-inline justify-content-center mt-5">
+          <form action="{% url 'course_list' %}" method="post" class="form-inline justify-content-center mt-5">
             {% csrf_token %}
             {% if form.email.errors %}
               {% for error in form.email.errors %}

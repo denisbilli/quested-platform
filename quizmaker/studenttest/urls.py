@@ -1,5 +1,6 @@
-from django.urls import path, include
 from django.contrib.auth.views import LogoutView
+from django.urls import include, path
+
 from . import views
 
 urlpatterns = [
@@ -22,6 +23,5 @@ urlpatterns = [
 
     # Altre URL
     path('exercises/<int:exercise_id>/submit/', views.submit_exercise, name='submit_exercise'),
-    path('exercise/<int:exercise_id>/duplicate/', views.duplicate_exercise, name='duplicate_exercise'),
     path('test/<int:test_pk>/user/<int:user_pk>/report/', views.UserTestReportView.as_view(), name='user_test_report'),
 ]
