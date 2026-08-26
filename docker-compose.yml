@@ -1,0 +1,49 @@
+services:
+  app:
+    build: .
+    image: quested:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Required. Generate with:
+      #   python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env next to this file}
+      DEBUG: "False"
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
+      # SQLite on a named volume. Four slashes: sqlite:/// + absolute path.
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/db.sqlite3}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Behind a TLS-terminating proxy set both of these to their real values.
+      SECURE_SSL_REDIRECT: ${SECURE_SSL_REDIRECT:-False}
+      SECURE_HSTS_SECONDS: ${SECURE_HSTS_SECONDS:-0}
+    volumes:
+      # Student submissions. Losing this volume loses the consegne — the PDF
+      # report reads the uploaded files back off disk.
+      - quested-media:/app/quizmaker/media
+      # The SQLite database. Drop this pair if you move to Postgres below.
+      - quested-data:/app/data
+
+  # Uncomment to run Postgres instead of SQLite, and set in .env:
+  #   DATABASE_URL=postgres://quested:CHANGE_ME@db:5432/quested
+  #
+  # db:
+  #   image: postgres:17-alpine
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: quested
+  #     POSTGRES_USER: quested
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+  #   volumes:
+  #     - quested-pgdata:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U quested"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+volumes:
+  quested-media:
+  quested-data:
+  # quested-pgdata:

@@ -50,6 +50,57 @@ npm run build         # CSS minificato + copia dei file vendor
 I sorgenti stanno in `frontend/app.css`; l'output in
 `quizmaker/static/css/app.css`.
 
+## Docker
+
+```bash
+cp .env.example.docker .env      # oppure crea .env con almeno SECRET_KEY
+docker compose up -d
+```
+
+L'app risponde su http://localhost:8000/it/ — le migrazioni girano da sole
+all'avvio. Il primo utente si crea con:
+
+```bash
+docker compose exec app python manage.py createsuperuser
+```
+
+L'immagine è single-stage: il CSS compilato e i cataloghi `.mo` sono
+versionati, quindi non serve Node né `compilemessages` in fase di build.
+`collectstatic` gira al build con una `SECRET_KEY` usa-e-getta, perché
+`settings.py` non ha un fallback per quella vera — l'assenza della chiave
+deve essere un errore rumoroso, non un default silenzioso.
+
+### Volumi
+
+Due, entrambi necessari:
+
+| Volume | Percorso | Contenuto |
+|---|---|---|
+| `quested-media` | `/app/quizmaker/media` | file consegnati dagli studenti |
+| `quested-data` | `/app/data` | database SQLite |
+
+`quested-media` è il più delicato: il report PDF rilegge da disco i file
+consegnati, quindi perdere quel volume significa perdere le consegne.
+
+### SQLite o Postgres
+
+Di default SQLite su volume, con `transaction_mode: IMMEDIATE` già impostato.
+Con più worker gunicorn le scritture si serializzano: per una classe alla volta
+va bene, ma è il tetto. Per superarlo basta decommentare il servizio `db` in
+`docker-compose.yml` e impostare `DATABASE_URL` — il codice non cambia.
+
+### Dietro un reverse proxy
+
+Il proxy termina TLS e passa `X-Forwarded-Proto` (già atteso da
+`SECURE_PROXY_SSL_HEADER`). Nel `.env`:
+
+```bash
+ALLOWED_HOSTS=quiz.esempio.it
+CSRF_TRUSTED_ORIGINS=https://quiz.esempio.it
+SECURE_SSL_REDIRECT=True
+SECURE_HSTS_SECONDS=31536000
+```
+
 ## Test e lint
 
 ```bash
