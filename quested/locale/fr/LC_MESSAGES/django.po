@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-01 14:51+0200\n"
+"POT-Creation-Date: 2026-08-26 11:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,208 +18,590 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\quizmaker\settings.py:138 .\quizmaker\settings_local.py:138
-#: .\quizmaker\settings_remote.py:141
+#: quested/settings.py:206
 msgid "Italiano"
 msgstr "Italien"
 
-#: .\quizmaker\settings.py:139 .\quizmaker\settings_local.py:139
-#: .\quizmaker\settings_remote.py:142
+#: quested/settings.py:207
 msgid "English"
 msgstr "Anglais"
 
-#: .\quizmaker\settings.py:140 .\quizmaker\settings_local.py:140
-#: .\quizmaker\settings_remote.py:143
+#: quested/settings.py:208
 msgid "French"
 msgstr "Français"
 
-#: .\quizmaker\settings.py:141 .\quizmaker\settings_local.py:141
-#: .\quizmaker\settings_remote.py:144
+#: quested/settings.py:209
 msgid "Spanish"
 msgstr "Espagnol"
 
-#: .\quizmaker\urls.py:23
+#: quested/urls.py:23
 msgid "admin/"
-msgstr ""
+msgstr "admin/"
 
-#: .\studenttest\models.py:31 .\templates\exercise_list.html:18
+#: studenttest/forms.py:48
+#, python-format
+msgid "Il file supera la dimensione massima di %(mb)s MB."
+msgstr "Le fichier dépasse la taille maximale de %(mb)s Mo."
+
+#: studenttest/forms.py:55
+#, python-format
+msgid "Estensione \"%(ext)s\" non ammessa."
+msgstr "Extension « %(ext)s » non autorisée."
+
+#: studenttest/models.py:78 templates/exercise_list.html:37
 msgid "Domanda aperta"
 msgstr "Question ouverte"
 
-#: .\studenttest\models.py:32 .\templates\exercise_list.html:19
+#: studenttest/models.py:79 templates/exercise_list.html:38
 msgid "Scelta multipla"
 msgstr "Choix multiple"
 
-#: .\studenttest\models.py:33 .\templates\exercise_list.html:20
+#: studenttest/models.py:80 templates/exercise_list.html:39
 msgid "Codice"
 msgstr "Programmation"
 
-#: .\studenttest\models.py:34 .\templates\exercise_list.html:21
+#: studenttest/models.py:81 templates/exercise_list.html:40
 msgid "Diagramma di flusso"
 msgstr "Diagramme de flux"
 
-#: .\templates\admin\studenttest\user_detail.html:6
-#: .\templates\admin\studenttest\users_per_test.html:6
+#: templates/403.html:9
+msgid "Questa pagina non è tua"
+msgstr "Cette page n'est pas la vôtre"
+
+#: templates/403.html:10
+msgid "Il tuo account non ha i permessi per aprirla."
+msgstr "Votre compte n'a pas les droits pour l'ouvrir."
+
+#: templates/403.html:11 templates/404.html:11 templates/error.html:15
+msgid "Vai ai corsi"
+msgstr "Aller aux cours"
+
+#: templates/404.html:9
+msgid "Questa pagina non esiste"
+msgstr "Cette page n'existe pas"
+
+#: templates/404.html:10
+msgid "Il link potrebbe essere vecchio, o la verifica è stata rimossa."
+msgstr "Le lien est peut-être ancien, ou le contrôle a été supprimé."
+
+#: templates/admin/studenttest/users_per_test.html:6
 msgid "Home"
-msgstr ""
+msgstr "Accueil"
 
-#: .\templates\base.html:11 .\templates\base.html:16
-msgid "Corso C++ Quiz"
-msgstr "Quiz du cours C++"
+#: templates/auth_base.html:42
+msgid "Esercizi, verifiche e soluzioni dei corsi di programmazione."
+msgstr "Exercices, contrôles et corrigés des cours de programmation."
 
-#: .\templates\base.html:25
+#: templates/auth_base.html:47
+msgid "domanda aperta · codice · scelta multipla · diagramma"
+msgstr "question ouverte · code · choix multiple · organigramme"
+
+#: templates/base.html:7
+msgid "La piattaforma di esercizi e verifiche dei corsi di programmazione."
+msgstr "La plateforme d'exercices et de contrôles des cours de programmation."
+
+#: templates/base.html:33
+msgid "Vai al contenuto"
+msgstr "Aller au contenu"
+
+#: templates/base.html:44
+msgid "Principale"
+msgstr "Principal"
+
+#: templates/base.html:47 templates/base.html:94 templates/course_list.html:4
+#: templates/exercise_list.html:8 templates/submit_exercise.html:8
+#: templates/test_list.html:8
+msgid "Corsi"
+msgstr "Cours"
+
+#: templates/base.html:52
+#| msgid "Registrazione"
+msgid "Gestione"
+msgstr "Administration"
+
+#: templates/base.html:63
 msgid "Lingua"
 msgstr "Langue"
 
-#: .\templates\base.html:39
-#, python-format
-msgid "Ciao, %(firstname)s %(lastname)s"
-msgstr "Bonjour, %(firstname)s %(lastname)s"
+#: templates/base.html:74
+msgid "Cambia tema"
+msgstr "Changer de thème"
 
-#: .\templates\base.html:42 .\templates\profile.html:19
+#: templates/base.html:93 templates/registration/profile.html:4
 msgid "Profilo"
 msgstr "Profil"
 
-#: .\templates\base.html:44
-msgid "Amministrazione"
-msgstr "Administration"
-
-#: .\templates\base.html:49
+#: templates/base.html:98
 msgid "Esci"
-msgstr "Déconnexion"
+msgstr "Se déconnecter"
 
-#: .\templates\base.html:55
-msgid "Registrazione/Login"
-msgstr "Inscription/Connexion"
-
-#: .\templates\error.html:9
-msgid "Errore"
-msgstr "Erreur"
-
-#: .\templates\error.html:15
-msgid "Torna alla Home"
-msgstr "Retour à l'accueil"
-
-#: .\templates\exercise_list.html:9
-msgid "Punteggio totale"
-msgstr "Score total"
-
-#: .\templates\exercise_list.html:11
-msgid "Tabella"
-msgstr "Tableau"
-
-#: .\templates\exercise_list.html:14 .\templates\exercise_list.html:17
-msgid "Nessun filtro"
-msgstr "Pas de filtre"
-
-#: .\templates\exercise_list.html:27 .\templates\exercise_list.html:30
-msgid "Punteggio più basso"
-msgstr "Score le plus bas"
-
-#: .\templates\exercise_list.html:31
-msgid "Punteggio più alto"
-msgstr "Score le plus élevé"
-
-#: .\templates\exercise_list.html:56 .\templates\submit_exercise.html:12
-msgid "Punti"
-msgstr "Points"
-
-#: .\templates\exercise_list.html:69
-msgid "Titolo"
-msgstr "Titre"
-
-#: .\templates\exercise_list.html:70 .\templates\submit_exercise.html:10
-msgid "Tipologia"
-msgstr "Type d'exercices"
-
-#: .\templates\exercise_list.html:71
-msgid "Punteggio"
-msgstr "Points"
-
-#: .\templates\exercise_list.html:93
-msgid "Non ci sono esercizi."
-msgstr "Il n'existe pas d'exercices."
-
-#: .\templates\exercise_list.html:101 .\templates\submit_exercise.html:77
-msgid "Indietro"
-msgstr "Retour"
-
-#: .\templates\profile.html:34
-msgid "Salva"
-msgstr "Sauver"
-
-#: .\templates\profile.html:41
-msgid "Cambio Password"
-msgstr "Modification du mot de passe"
-
-#: .\templates\register.html:11
-msgid "Registrazione"
-msgstr "Inscription"
-
-#: .\templates\register.html:23
-msgid "Registrati"
-msgstr "Registre"
-
-#: .\templates\register.html:27
-msgid "Login"
-msgstr ""
-
-#: .\templates\register.html:39
+#: templates/base.html:105 templates/registration/login.html:4
+#: templates/registration/login.html:7 templates/registration/login.html:30
+#: templates/registration/password_reset_complete.html:9
+#: templates/registration/register.html:38
 msgid "Accedi"
 msgstr "Se connecter"
 
-#: .\templates\submit_exercise.html:18 .\templates\test_list.html:11
-msgid "Descrizione"
-msgstr "Description"
+#: templates/base.html:132
+msgid "esercizi e verifiche dei corsi di programmazione"
+msgstr "exercices et contrôles des cours de programmation"
 
-#: .\templates\submit_exercise.html:22
+#: templates/course_list.html:8
+msgid "I tuoi corsi"
+msgstr "Vos cours"
+
+#: templates/course_list.html:10
+#, python-format
+#| msgid "Ciao, %(firstname)s %(lastname)s"
+msgid "Ciao, %(name)s"
+msgstr "Bonjour, %(name)s"
+
+#: templates/course_list.html:13
+#, python-format
+msgid "Hai un corso disponibile."
+msgid_plural "Hai %(counter)s corsi disponibili."
+msgstr[0] "Vous avez un cours disponible."
+msgstr[1] "Vous avez %(counter)s cours disponibles."
+
+#: templates/course_list.html:24
+msgid "iscritto"
+msgstr "inscrit"
+
+#: templates/course_list.html:26
+msgid "aperto"
+msgstr "ouvert"
+
+#: templates/course_list.html:33
+#| msgid "Descrizione"
+msgid "Nessuna descrizione."
+msgstr "Aucune description."
+
+#: templates/course_list.html:39
+msgid "dal"
+msgstr "depuis le"
+
+#: templates/course_list.html:41 templates/test_list.html:50
+msgid "Apri"
+msgstr "Ouvrir"
+
+#: templates/course_list.html:43
+msgid "non iscritto"
+msgstr "non inscrit"
+
+#: templates/course_list.html:46
+msgid "Iscriviti"
+msgstr "S'inscrire"
+
+#: templates/course_list.html:55
+msgid "Ancora nessun corso"
+msgstr "Aucun cours pour le moment"
+
+#: templates/course_list.html:57
+msgid ""
+"Quando un docente pubblica un corso lo trovi qui. Chiedi al tuo docente di "
+"abilitarti."
+msgstr ""
+"Les cours apparaissent ici dès qu'un enseignant en publie un. Demandez "
+"l'accès à votre enseignant."
+
+#: templates/error.html:4 templates/error.html:8
+msgid "Accesso negato"
+msgstr "Accès refusé"
+
+#: templates/error.html:9
+msgid "Non puoi aprire questa pagina"
+msgstr "Vous ne pouvez pas ouvrir cette page"
+
+#: templates/error.html:13
+msgid "Indietro"
+msgstr "Retour"
+
+#: templates/exercise_list.html:7 templates/submit_exercise.html:7
+#: templates/test_list.html:7
+msgid "Percorso"
+msgstr "Fil d'Ariane"
+
+#: templates/exercise_list.html:18
+msgid "Verifica valutata"
+msgstr "Contrôle noté"
+
+#: templates/exercise_list.html:18 templates/submit_exercise.html:108
+#| msgid "Registrazione"
+msgid "Esercitazione"
+msgstr "Entraînement"
+
+#: templates/exercise_list.html:24
+msgid "Punteggio totale"
+msgstr "Total des points"
+
+#: templates/exercise_list.html:27 templates/test_list.html:45
+#| msgid "Contrassegna"
+msgid "consegna"
+msgstr "à rendre le"
+
+#: templates/exercise_list.html:35
+msgid "Filtra"
+msgstr "Filtrer"
+
+#: templates/exercise_list.html:36
+msgid "Tutti"
+msgstr "Tous"
+
+#: templates/exercise_list.html:44
+msgid "Ordina"
+msgstr "Trier"
+
+#: templates/exercise_list.html:46
+msgid "Ordine del test"
+msgstr "Ordre du contrôle"
+
+#: templates/exercise_list.html:47
+#| msgid "Punteggio totale"
+msgid "Punteggio crescente"
+msgstr "Points croissants"
+
+#: templates/exercise_list.html:48
+#| msgid "Punteggio totale"
+msgid "Punteggio decrescente"
+msgstr "Points décroissants"
+
+#: templates/exercise_list.html:52 templates/exercise_list.html:53
+#| msgid "Tabella"
+msgid "Vista tabella"
+msgstr "Vue tableau"
+
+#: templates/exercise_list.html:52
+msgid "Vista percorso"
+msgstr "Vue parcours"
+
+#: templates/exercise_list.html:73
+#| msgid "Mostra Esercizi"
+msgid "Esercizio"
+msgstr "Exercice"
+
+#: templates/exercise_list.html:74
+msgid "Tipologia"
+msgstr "Type"
+
+#: templates/exercise_list.html:75
+msgid "Punti"
+msgstr "Points"
+
+#: templates/exercise_list.html:76
+msgid "Stato"
+msgstr "État"
+
+#: templates/exercise_list.html:93 templates/partials/_rail_item.html:24
+#| msgid "Contrassegna"
+msgid "consegnato"
+msgstr "rendu"
+
+#: templates/exercise_list.html:95 templates/partials/_rail_item.html:26
+msgid "segnato"
+msgstr "marqué"
+
+#: templates/exercise_list.html:97 templates/partials/_rail_item.html:28
+msgid "da fare"
+msgstr "à faire"
+
+#: templates/exercise_list.html:107
+msgid "Nessun esercizio di questo tipo in questa verifica."
+msgstr "Aucun exercice de ce type dans ce contrôle."
+
+#: templates/exercise_list.html:111
+#| msgid "Non ci sono esercizi."
+msgid "Nessun esercizio"
+msgstr "Aucun exercice"
+
+#: templates/exercise_list.html:112
+msgid "Questa verifica non contiene ancora esercizi."
+msgstr "Ce contrôle ne contient pas encore d'exercices."
+
+#: templates/partials/_rail_item.html:18 templates/submit_exercise.html:28
+#| msgid "Punti"
+msgid "punti"
+msgstr "points"
+
+#: templates/partials/_rail_item.html:21
+msgid "Studenti che lo hanno completato"
+msgstr "Élèves qui l'ont terminé"
+
+#: templates/partials/_rail_item.html:22
+msgid "Valutazione media"
+msgstr "Note moyenne"
+
+#: templates/registration/login.html:8
+msgid "Entra per vedere i tuoi corsi e le verifiche."
+msgstr "Connectez-vous pour voir vos cours et vos contrôles."
+
+#: templates/registration/login.html:12
+msgid "Nome utente o password non corretti. Riprova."
+msgstr "Nom d'utilisateur ou mot de passe incorrect. Réessayez."
+
+#: templates/registration/login.html:21 templates/registration/profile.html:38
+msgid "Nome utente"
+msgstr "Nom d'utilisateur"
+
+#: templates/registration/login.html:26 templates/registration/profile.html:49
+#| msgid "Cambio Password"
+msgid "Password"
+msgstr "Mot de passe"
+
+#: templates/registration/login.html:34
+msgid "Password dimenticata"
+msgstr "Mot de passe oublié"
+
+#: templates/registration/login.html:35 templates/registration/register.html:4
+#: templates/registration/register.html:7
+msgid "Crea un account"
+msgstr "Créer un compte"
+
+#: templates/registration/password_reset_complete.html:4
+#: templates/registration/password_reset_complete.html:7
+msgid "Password aggiornata"
+msgstr "Mot de passe mis à jour"
+
+#: templates/registration/password_reset_complete.html:8
+msgid "Puoi accedere con la nuova password."
+msgstr "Vous pouvez vous connecter avec le nouveau mot de passe."
+
+#: templates/registration/password_reset_confirm.html:4
+#: templates/registration/password_reset_confirm.html:8
+msgid "Scegli una nuova password"
+msgstr "Choisissez un nouveau mot de passe"
+
+#: templates/registration/password_reset_confirm.html:9
+msgid "Inseriscila due volte, per sicurezza."
+msgstr "Saisissez-le deux fois, par sécurité."
+
+#: templates/registration/password_reset_confirm.html:26
+msgid "Salva la password"
+msgstr "Enregistrer le mot de passe"
+
+#: templates/registration/password_reset_confirm.html:29
+msgid "Link non più valido"
+msgstr "Lien expiré"
+
+#: templates/registration/password_reset_confirm.html:31
+msgid "Questo link è già stato usato o è scaduto. Chiedine uno nuovo."
+msgstr "Ce lien a déjà été utilisé ou a expiré. Demandez-en un nouveau."
+
+#: templates/registration/password_reset_confirm.html:33
+msgid "Chiedi un nuovo link"
+msgstr "Demander un nouveau lien"
+
+#: templates/registration/password_reset_done.html:4
+#: templates/registration/password_reset_done.html:7
+msgid "Controlla l'email"
+msgstr "Vérifiez votre boîte mail"
+
+#: templates/registration/password_reset_done.html:9
+msgid ""
+"Se esiste un account con quell'indirizzo, il link per la nuova password è in"
+" arrivo. Guarda anche nello spam."
+msgstr ""
+"Si un compte existe pour cette adresse, le lien arrive. Pensez à regarder "
+"aussi dans les spams."
+
+#: templates/registration/password_reset_done.html:11
+#: templates/registration/password_reset_form.html:23
+#| msgid "Torna alla Home"
+msgid "Torna all'accesso"
+msgstr "Retour à la connexion"
+
+#: templates/registration/password_reset_form.html:4
+#: templates/registration/password_reset_form.html:7
+msgid "Reimposta la password"
+msgstr "Réinitialiser le mot de passe"
+
+#: templates/registration/password_reset_form.html:9
+msgid ""
+"Inserisci l'email del tuo account. Ti mandiamo un link per sceglierne una "
+"nuova."
+msgstr ""
+"Saisissez l'e-mail de votre compte. Nous vous enverrons un lien pour en "
+"choisir un nouveau."
+
+#: templates/registration/password_reset_form.html:15
+#: templates/registration/profile.html:34
+msgid "Email"
+msgstr "E-mail"
+
+#: templates/registration/password_reset_form.html:19
+msgid "Mandami il link"
+msgstr "Envoyer le lien"
+
+#: templates/registration/profile.html:8
+msgid "Account"
+msgstr "Compte"
+
+#: templates/registration/profile.html:11
+msgid "docente"
+msgstr "enseignant"
+
+#: templates/registration/profile.html:18
+msgid "I tuoi dati"
+msgstr "Vos informations"
+
+#: templates/registration/profile.html:19
+msgid "Come compari nelle consegne e nei report."
+msgstr "Comment vous apparaissez dans les rendus et les rapports."
+
+#: templates/registration/profile.html:25
+msgid "Nome"
+msgstr "Prénom"
+
+#: templates/registration/profile.html:29
+msgid "Cognome"
+msgstr "Nom"
+
+#: templates/registration/profile.html:40
+msgid "Il nome utente non si può cambiare."
+msgstr "Le nom d'utilisateur ne peut pas être modifié."
+
+#: templates/registration/profile.html:43
+msgid "Salva modifiche"
+msgstr "Enregistrer"
+
+#: templates/registration/profile.html:50
+msgid "Resti connesso anche dopo il cambio."
+msgstr "Vous restez connecté après le changement."
+
+#: templates/registration/profile.html:71
+#| msgid "Cambio Password"
+msgid "Cambia password"
+msgstr "Changer le mot de passe"
+
+#: templates/registration/register.html:8
+msgid "Ti serve per iscriverti ai corsi e consegnare gli esercizi."
+msgstr "Il vous permet de vous inscrire aux cours et de rendre les exercices."
+
+#: templates/registration/register.html:34
+msgid "Crea account"
+msgstr "Créer le compte"
+
+#: templates/registration/register.html:38
+msgid "Hai già un account?"
+msgstr "Vous avez déjà un compte ?"
+
+#: templates/submit_exercise.html:30
+#| msgid "Torna alla Home"
+msgid "Torna alla verifica"
+msgstr "Retour au contrôle"
+
+#: templates/submit_exercise.html:38 templates/submit_exercise.html:102
+#: templates/submit_test.html:8 templates/submit_test.html:21
+#| msgid "Contrassegna"
+msgid "Consegna"
+msgstr "Énoncé"
+
+#: templates/submit_exercise.html:46
+#| msgid "Invia Risposta"
+msgid "La tua risposta"
+msgstr "Votre réponse"
+
+#: templates/submit_exercise.html:60
+#| msgid "Invia Risposta"
+msgid "Scegli una risposta"
+msgstr "Choisissez une réponse"
+
+#: templates/submit_exercise.html:74
+#| msgid "Incolla il tuo codice"
+msgid "Incolla qui il tuo codice"
+msgstr "Collez votre code ici"
+
+#: templates/submit_exercise.html:80
+msgid "Oppure allega un file"
+msgstr "Ou joignez un fichier"
+
+#: templates/submit_exercise.html:85
+msgid "già consegnato"
+msgstr "déjà rendu"
+
+#: templates/submit_exercise.html:92
 msgid "Risposta"
 msgstr "Réponse"
 
-#: .\templates\submit_exercise.html:43
-msgid "Scrivi qui il tuo esercizio"
-msgstr "Inscrivez votre exercice ici"
+#: templates/submit_exercise.html:100
+msgid "già consegnato — puoi correggere"
+msgstr "déjà rendu — vous pouvez le corriger"
 
-#: .\templates\submit_exercise.html:48
-msgid "Incolla il tuo codice"
-msgstr "Collez votre code"
+#: templates/submit_exercise.html:100
+msgid "non ancora consegnato"
+msgstr "pas encore rendu"
 
-#: .\templates\submit_exercise.html:51
-msgid "Scegli il file"
-msgstr "Choisir le fichier"
+#: templates/submit_exercise.html:110
+msgid "Prova a risolverlo da solo, poi confronta con la soluzione."
+msgstr "Essayez de le résoudre seul, puis comparez avec le corrigé."
 
-#: .\templates\submit_exercise.html:62
+#: templates/submit_exercise.html:113
 msgid "Mostra soluzione"
-msgstr "Montrer la solution"
+msgstr "Afficher le corrigé"
 
-#: .\templates\submit_exercise.html:64
-msgid "Contrassegna"
-msgstr "Marque"
+#: templates/submit_exercise.html:116
+#| msgid "Mostra soluzione"
+msgid "Soluzione"
+msgstr "Corrigé"
 
-#: .\templates\submit_exercise.html:64
-msgid "Rimuovi contrassegno"
-msgstr "Retirer le marqueur"
+#: templates/submit_exercise.html:137
+msgid "Quanto era difficile?"
+msgstr "Quelle difficulté ?"
 
-#: .\templates\submit_exercise.html:66
-msgid "Ti è sembrato facile questo esercizio?"
-msgstr "Avez-vous trouvé cet exercice facile?"
+#: templates/submit_exercise.html:145
+#, python-format
+msgid "%(star)s stelle"
+msgstr "%(star)s étoiles"
 
-#: .\templates\submit_exercise.html:75
-msgid "Invia Risposta"
-msgstr "Envoyer la réponse"
+#: templates/submit_exercise.html:149
+msgid "azzera"
+msgstr "effacer"
 
-#: .\templates\test_list.html:10
-msgid "Test"
-msgstr "Essais"
+#: templates/submit_exercise.html:158
+msgid "Togli da completati"
+msgstr "Retirer des terminés"
 
-#: .\templates\test_list.html:22
-msgid "Inizia Test"
-msgstr "Début du test"
+#: templates/submit_exercise.html:158
+msgid "Segna come completato"
+msgstr "Marquer comme terminé"
 
-#: .\templates\test_list.html:24
-msgid "Mostra Esercizi"
-msgstr "Montrer les exercices"
+#: templates/test_list.html:4 templates/test_list.html:14
+msgid "Verifiche"
+msgstr "Contrôles"
 
-#: .\templates\test_list.html:32
-msgid "Non ci sono test attivi."
-msgstr "Il n'y a pas de tests actifs."
+#: templates/test_list.html:13
+msgid "Corso"
+msgstr "Cours"
+
+#: templates/test_list.html:20
+msgid "iscritto dal"
+msgstr "inscrit depuis le"
+
+#: templates/test_list.html:32
+msgid "valutata"
+msgstr "noté"
+
+#: templates/test_list.html:34
+#| msgid "Descrizione"
+msgid "esercitazione"
+msgstr "entraînement"
+
+#: templates/test_list.html:47
+#, python-format
+#| msgid "Mostra Esercizi"
+msgid "%(counter)s esercizio"
+msgid_plural "%(counter)s esercizi"
+msgstr[0] "%(counter)s exercice"
+msgstr[1] "%(counter)s exercices"
+
+#: templates/test_list.html:57
+msgid "Nessuna verifica pubblicata"
+msgstr "Aucun contrôle publié"
+
+#: templates/test_list.html:59
+msgid "Questo corso non ha ancora verifiche attive."
+msgstr "Ce cours n'a pas encore de contrôle actif."
+
+#: templates/test_list.html:61
+#| msgid "Torna alla Home"
+msgid "Torna ai corsi"
+msgstr "Retour aux cours"
