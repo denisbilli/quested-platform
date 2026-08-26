@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% comment %}
+  Frame for the signed-out pages. The left panel draws a small flowchart in the
+  app's own node shapes — the notation the courses teach — instead of the stock
+  illustration the old theme shipped.
+{% endcomment %}
+
+{% block main_class %}flex-1{% endblock %}
+{% block header_auth %}{% endblock %}
+
+{% block content %}
+<div class="grid min-h-[calc(100vh-3.5rem)] lg:grid-cols-[1.05fr_1fr]">
+
+  <aside class="hidden flex-col justify-between border-r border-rule bg-sunken p-10 lg:flex">
+    <p class="eyebrow">QuestEd</p>
+
+    <div class="mx-auto w-full max-w-xs">
+      <svg viewBox="0 0 200 250" class="w-full" fill="none" aria-hidden="true">
+        <defs>
+          <marker id="arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0 0 8 4 0 8Z" fill="currentColor" class="text-rule-strong"/>
+          </marker>
+        </defs>
+
+        <g class="text-rule-strong" stroke="currentColor" stroke-width="1.5" marker-end="url(#arrow)">
+          <path d="M100 42v26"/>
+          <path d="M100 104v8"/>
+          <path d="M100 174v16"/>
+          <path d="M140 143h34v67h-20"/>
+        </g>
+
+        <g stroke="currentColor" stroke-width="1.8">
+          <rect x="52" y="14" width="96" height="28" rx="14" class="text-ink-faint"/>
+          <rect x="52" y="74" width="96" height="30" rx="2" class="text-pen"/>
+          <path d="M100 118l40 25-40 25-40-25Z" class="text-pen" stroke-linejoin="round"/>
+          <rect x="52" y="190" width="96" height="28" rx="14" class="text-green"/>
+        </g>
+      </svg>
+      <p class="mt-8 text-center text-sm text-ink-soft">
+        {% translate "Esercizi, verifiche e soluzioni dei corsi di programmazione." %}
+      </p>
+    </div>
+
+    <p class="font-mono text-xs text-ink-faint">
+      {% translate "domanda aperta · codice · scelta multipla · diagramma" %}
+    </p>
+  </aside>
+
+  <div class="flex items-center justify-center px-4 py-12 sm:px-10">
+    <div class="w-full max-w-sm">
+      {% block auth_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

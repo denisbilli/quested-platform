@@ -1,75 +1,40 @@
-{% extends 'registration/base_register.html' %}
+{% extends 'auth_base.html' %}
+{% load i18n %}
 
-{% load static %}
-{% block content %}
+{% block title %}{% translate "Crea un account" %} — QuestEd{% endblock %}
 
-<div class="row align-items-center">
-    <div class="col-md-6 col-lg-7">
-        <img src="{% static 'src/images/quested_room.png' %}" alt="">
+{% block auth_content %}
+<h1 class="text-3xl">{% translate "Crea un account" %}</h1>
+<p class="mt-2 text-sm text-ink-soft">{% translate "Ti serve per iscriverti ai corsi e consegnare gli esercizi." %}</p>
+
+<form method="post" action="{% url 'register' %}" class="mt-6 flex flex-col gap-4">
+  {% csrf_token %}
+
+  {% if register_form.non_field_errors %}
+    <div class="rounded-lg border border-red bg-red-wash px-3 py-2 text-sm text-red">
+      {% for error in register_form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
     </div>
-    <div class="col-md-6 col-lg-5">
-        <div class="register-box bg-white box-shadow border-radius-10">
-            <div class="wizard-content">
-                <form class="tab-wizard-user wizard-circle wizard" method="POST" action="{% url 'register' %}">
-                    {% csrf_token %}
-                    <h5>New User Registration</h5>
-                    <section>
-                        <div class="form-wrap max-width-600 mx-auto">
-                            <!-- Name and Surname -->
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Name*</label>
-                                <div class="col-sm-8">
-                                    <input type="text" name="name" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Surname*</label>
-                                <div class="col-sm-8">
-                                    <input type="text" name="surname" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Email*</label>
-                                <div class="col-sm-8">
-                                    <input type="email" name="email" class="form-control" required>
-                                </div>
-                            </div>
-                            <!-- Username and Password -->
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Username*</label>
-                                <div class="col-sm-8">
-                                    <input type="text" name="username" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Password*</label>
-                                <div class="col-sm-8">
-                                    <input type="password" name="password" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Confirm Password*</label>
-                                <div class="col-sm-8">
-                                    <input type="password" name="cnf_password" class="form-control" required>
-                                </div>
-                            </div>
-                            <!-- Additional Info (Optional) -->
-                            <!-- Other fields like Date of Birth, Gender, City etc. can be added here -->
-                        </div>
-                    </section>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+  {% endif %}
 
-{% endblock %}
-{% block scripts %}
-<!-- switchery js -->
-<script src="{% static 'src/plugins/switchery/switchery.min.js' %}"></script>
-<!-- bootstrap-tagsinput js -->
-<script src="{% static 'src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js' %}"></script>
-<!-- bootstrap-touchspin js -->
-<script src="{% static 'src/plugins/bootstrap-touchspin/jquery.bootstrap-touchspin.js' %}"></script>
-<script src="{% static 'vendors/scripts/advanced-components.js' %}"></script>
+  {% for field in register_form %}
+    <div>
+      <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+      <input type="{% if 'password' in field.name %}password{% else %}text{% endif %}"
+             name="{{ field.name }}" id="{{ field.id_for_label }}" class="field"
+             autocomplete="{% if field.name == 'username' %}username{% elif 'password' in field.name %}new-password{% endif %}"
+             value="{{ field.value|default:'' }}" required>
+      {% if field.errors %}
+        <p class="mt-1 text-xs text-red">{% for error in field.errors %}{{ error }} {% endfor %}</p>
+      {% elif field.help_text %}
+        <p class="mt-1 text-xs text-ink-faint">{{ field.help_text|safe }}</p>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <button type="submit" name="register" value="1" class="btn btn-primary w-full">{% translate "Crea account" %}</button>
+</form>
+
+<p class="mt-6 border-t border-rule pt-4 text-sm text-ink-soft">
+  {% translate "Hai già un account?" %} <a href="{% url 'login' %}" class="link">{% translate "Accedi" %}</a>
+</p>
 {% endblock %}

@@ -1,0 +1,32 @@
+{% load i18n %}
+{% comment %}
+  The marker for one exercise, drawn as the ISO 5807 flowchart symbol for its
+  type — the same notation the course itself teaches:
+
+    O  domanda aperta      terminator (stadium)
+    M  scelta multipla     decision (diamond)
+    C  codice              process (rectangle)
+    D  diagramma di flusso data (parallelogram)
+
+  Fill encodes progress: solid when done, outlined when still open.
+  Expects `exercise` and `state` ("done", "flag" or "todo") in context.
+{% endcomment %}
+<span class="grid h-11 w-11 shrink-0 place-items-center rounded-full border-2
+  {% if state == 'done' %}border-green bg-green-wash text-green
+  {% elif state == 'flag' %}border-amber bg-amber-wash text-amber
+  {% else %}border-rule-strong bg-raised text-ink-faint{% endif %}"
+  title="{{ exercise.get_type_display }}">
+  <svg viewBox="0 0 24 24" class="h-5 w-5" fill="{% if state == 'done' %}currentColor{% else %}none{% endif %}"
+       stroke="currentColor" stroke-width="2" aria-hidden="true">
+    {% if exercise.type == 'M' %}
+      <path d="M12 4 20 12 12 20 4 12Z" stroke-linejoin="round"/>
+    {% elif exercise.type == 'C' %}
+      <rect x="4" y="6.5" width="16" height="11" rx="1" />
+    {% elif exercise.type == 'D' %}
+      <path d="M7 6.5H21L17 17.5H3Z" stroke-linejoin="round"/>
+    {% else %}
+      <rect x="3" y="7" width="18" height="10" rx="5" />
+    {% endif %}
+  </svg>
+  <span class="sr-only">{{ exercise.get_type_display }}</span>
+</span>

@@ -1,79 +1,61 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load course_filters %}
-{% load static %}
+
+{% block title %}{% translate "Corsi" %} — QuestEd{% endblock %}
 
 {% block content %}
-<div class="xs-pd-20-10">
-    <div class="min-height-200px">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="title">
-                        <h4>{% translate "Lista Corsi" %}</h4>
-                    </div>
-                    <nav aria-label="breadcrumb" role="navigation">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{% translate "Lista Corsi" %}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
+<header class="mb-8">
+  <p class="eyebrow">{% translate "I tuoi corsi" %}</p>
+  <h1 class="mt-1 text-3xl sm:text-4xl">
+    {% blocktranslate with name=user.get_short_name|default:user.username %}Ciao, {{ name }}{% endblocktranslate %}
+  </h1>
+  <p class="mt-2 max-w-prose text-ink-soft">
+    {% blocktranslate count counter=courses|length %}Hai un corso disponibile.{% plural %}Hai {{ counter }} corsi disponibili.{% endblocktranslate %}
+  </p>
+</header>
+
+{% if courses %}
+  <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {% for course in courses %}
+      <li class="surface flex flex-col p-5 transition-shadow hover:shadow-lift">
+        <div class="mb-3 flex items-start justify-between gap-3">
+          <h2 class="text-lg leading-snug">{{ course.name }}</h2>
+          {% if course.user_enrollment %}
+            <span class="chip chip-done">{% translate "iscritto" %}</span>
+          {% else %}
+            <span class="chip chip-neutral">{% translate "aperto" %}</span>
+          {% endif %}
         </div>
 
-        <div class="card-box mb-10">
-            <div class="pd-20 d-flex stats-container">
-                <h4 class="text-blue h4">{% translate "Corsi Disponibili" %}</h4>
-            </div>
-            <div class="pb-20" style="padding: 20px">
-                {% if courses %}
-                    <div class="card-deck mb-4">
-                        {% for course in courses %}
-                        <div class="card mb-4" style="min-width: 18rem;">
-                            {% if course.image %}
-                            <img class="card-img-top" src="{{ course.image.url }}" alt="{{ course.name }}">
-                            {% else %}
-                            <img class="card-img-top" src="{% static 'vendors/images/img4.jpg' %}" alt="{{ course.name }}">
-                            {% endif %}
-                            <div class="card-body">
-                                <h5 class="card-title">{{ course.name }}</h5>
-                                <p class="card-text">{{ course.description }}</p>
-                                {% if course|is_student_enrolled:user %}
-                                    <a href="{% url 'test_list_by_course' course.id %}" class="btn btn-primary">{% translate "Entra" %}</a>
-                                {% elif course.enabled %}
-                                    <form method="post" action="{% url 'enroll_in_course' course.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-secondary">{% translate "Iscriviti" %}</button>
-                                    </form>
-                                {% endif %}
-                            </div>
-                            <div class="card-footer">
-                                {% if course.user_enrollment %}
-                                    <small class="text-muted">{% translate "Iscritto il" %} {{ course.user_enrollment.0.enrollment_date|date:"d M Y" }}</small>
-                                {% else %}
-                                    <small class="text-muted">{% translate "Non iscritto" %}</small>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endfor %}
+        {% if course.description %}
+          <p class="mb-5 line-clamp-4 text-sm text-ink-soft">{{ course.description }}</p>
+        {% else %}
+          <p class="mb-5 text-sm italic text-ink-faint">{% translate "Nessuna descrizione." %}</p>
+        {% endif %}
 
-                        <!-- Aggiungi placeholder per mantenere l'allineamento -->
-                        {% for _ in num_placeholders|range_filter %}
-                        <div class="card mb-4" style="visibility: hidden;">
-                            <img class="card-img-top" src="{% static 'vendors/images/img4.jpg' %}" alt="Placeholder">
-                            <div class="card-body">
-                                <h5 class="card-title">Placeholder</h5>
-                                <p class="card-text">This is a placeholder card.</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p>{% translate "Nessun corso disponibile." %}</p>
-                {% endif %}
-            </div>
+        <div class="mt-auto flex items-center justify-between gap-3 border-t border-rule pt-4">
+          {% if course.user_enrollment %}
+            <span class="font-mono text-xs text-ink-faint">
+              {% translate "dal" %} {{ course.user_enrollment.0.enrollment_date|date:"d/m/Y" }}
+            </span>
+            <a href="{% url 'test_list_by_course' course.id %}" class="btn btn-primary">{% translate "Apri" %}</a>
+          {% else %}
+            <span class="font-mono text-xs text-ink-faint">{% translate "non iscritto" %}</span>
+            <form method="post" action="{% url 'enroll_in_course' course.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-quiet">{% translate "Iscriviti" %}</button>
+            </form>
+          {% endif %}
         </div>
-    </div>
-</div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="surface px-6 py-16 text-center">
+    <h2 class="text-xl">{% translate "Ancora nessun corso" %}</h2>
+    <p class="mx-auto mt-2 max-w-sm text-sm text-ink-soft">
+      {% translate "Quando un docente pubblica un corso lo trovi qui. Chiedi al tuo docente di abilitarti." %}
+    </p>
+  </div>
+{% endif %}
 {% endblock %}

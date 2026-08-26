@@ -1,13 +1,23 @@
-<!-- submit_test.html -->
-
 {% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ test.name }} — QuestEd{% endblock %}
 
 {% block content %}
-<h2>{{ test.name }}</h2>
-<div>{{ test.description|safe }}</div>
-<form action="" method="post" enctype="multipart/form-data">
+<header class="mb-8">
+  <p class="eyebrow">{% translate "Consegna" %}</p>
+  <h1 class="mt-1 text-3xl">{{ test.name }}</h1>
+</header>
+
+<form method="post" enctype="multipart/form-data" class="surface flex max-w-lg flex-col gap-4 p-6">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Submit</button>
+  {% for field in form %}
+    <div>
+      <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}<p class="mt-1 text-xs text-red">{{ field.errors|striptags }}</p>{% endif %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary self-start">{% translate "Consegna" %}</button>
 </form>
 {% endblock %}

@@ -1,188 +1,182 @@
-<!DOCTYPE html>
-{% load static %}
-{% load i18n %}
-{% load form_tags %}
-{% get_current_language as LANGUAGE_CODE %}
-
-<html lang="{{ LANGUAGE_CODE }}">
+{% load static i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'it' }}" data-theme="">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% translate "QuestEd" %}{% endblock %}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}QuestEd{% endblock %}</title>
+  <meta name="description" content="{% translate 'La piattaforma di esercizi e verifiche dei corsi di programmazione.' %}">
 
-    <!-- Site favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'vendors/images/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'vendors/images/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'vendors/images/favicon-16x16.png' %}">
-
-    <!-- Mobile Specific Metas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/core.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/icon-font.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'src/plugins/datatables/css/dataTables.bootstrap4.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'src/plugins/datatables/css/responsive.bootstrap4.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'src/styles/custom.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" rel="stylesheet">
-    <link id="prism-theme" rel="stylesheet" />
-</head>
-<body>
-    <div class="pre-loader">
-        <div class="pre-loader-box">
-            <div class="loader-logo">
-                <img src="{% static 'src/images/quested_dark.png' %}"
-                     alt=""
-                     style="width: 280px;"
-                     data-dark-src="{% static 'src/images/quested_dark.png' %}"
-                     data-light-src="{% static 'src/images/quested_light.png' %}">
-            </div>
-            <div class='loader-progress' id="progress_div">
-                <div class='bar' id='bar1'></div>
-            </div>
-            <div class='percent' id='percent1'>0%</div>
-            <div class="loading-text">
-                Loading...
-            </div>
-        </div>
-    </div>
-    
-    <div class="header">
-        <div class="header-left">
-            {% include "headers/header_left.html" %}
-        </div>
-        <div class="header-right">
-            {% include "headers/header_right.html" %}
-        </div>
-    </div>
-	
-    <div class="right-sidebar">
-        {% include "sidebars/sidebar_right.html" %}
-    </div>
-	
-	<div class="left-side-bar">
-        <div class="brand-logo">
-            <a href="/">
-                <img src="{% static 'src/images/quested_light.png' %}" alt="" class="dark-logo">
-                <img src="{% static 'src/images/quested_dark.png' %}" alt="" class="light-logo">
-            </a>
-            <div class="close-sidebar" data-toggle="left-sidebar-close">
-                <i class="ion-close-round"></i>
-            </div>
-        </div>
-        <div class="menu-block customscroll">
-            {% include "sidebars/sidebar_left.html" %}
-        </div>
-    </div>
-    <div class="mobile-menu-overlay"></div>
-
-    <div class="main-container">
-        {% block content %}{% endblock %}
-
-        <div class="footer-wrap pd-20 mb-20 card-box">
-            {% translate "QuestEd" %} {% translate "è sviluppato e mantenuto da" %} <a href="https://github.com/denisbilli" target="_blank">Denis Billi</a>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- js -->
-    <script src="{% static 'vendors/scripts/core.js' %}"></script>
-    <script src="{% static 'vendors/scripts/script.js' %}"></script>
-    <script src="{% static 'vendors/scripts/process.js' %}"></script>
-    <script src="{% static 'vendors/scripts/layout-settings.js' %}"></script>
-
-    <!-- Javascript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
-    <script>
-        document.addEventListener('dblclick', function(event) {
-            event.preventDefault();
-        }, { passive: false });
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
+  {# Resolve the theme before first paint, so a dark-mode student never sees a white flash. #}
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("quested-theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.setAttribute("data-theme", saved);
         }
+      } catch (e) { /* private mode: fall back to the system preference */ }
+    })();
+  </script>
 
-        const csrftoken = getCookie('csrftoken');
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'fonts/instrument-sans-latin-wght-normal.woff2' %}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'fonts/bricolage-grotesque-latin-wght-normal.woff2' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="icon" href="{% static 'img/favicon-32x32.png' %}" sizes="32x32">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col">
 
-        $('#mark-all-read').click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: '/mark-all-notifications-read/', // URL della vista AJAX per segnare tutte le notifiche come lette
-                method: 'POST',
-                headers: {'X-CSRFToken': getCookie('csrftoken')},
-                success: function(response) {
-                    // Aggiorna l'UI per riflettere che tutte le notifiche sono state lette
-                    // Ad esempio, puoi nascondere il badge delle notifiche non lette
-                    $('.badge.notification-active').hide();
-                    // Opzionale: Aggiorna la lista delle notifiche
-                },
-                error: function() {
-                    console.error('Error marking all notifications as read.');
-                }
-            });
-        });
+<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 btn btn-primary">
+  {% translate "Vai al contenuto" %}
+</a>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.sidebar-menu')) {
-                    //console.log("click fuori!");
-                    var elementsToShow = document.querySelectorAll('.collapsed-sidebar-mode .sidebar-menu li.show a[data-option="on"]');
-                    //console.log(elementsToShow);
+<header class="sticky top-0 z-40 border-b border-rule bg-paper/85 backdrop-blur-md">
+  <div class="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6">
 
-                    elementsToShow.forEach(function(element) {
-                        element.click();
-                    });
-                }
-            });
-        });
+    <a href="{% url 'course_list' %}" class="flex shrink-0 items-baseline font-display text-lg font-bold tracking-tight text-ink">
+      Quest<span class="text-pen">Ed</span>
+    </a>
 
-        document.addEventListener("DOMContentLoaded", function() {
-            function loadPrismTheme() {
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                const themeLink = document.getElementById('prism-theme');
-                if (isDarkMode) {
-                    themeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css';
-                } else {
-                    themeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css';
-                }
-            }
+    {% if user.is_authenticated %}
+      <nav class="ml-2 hidden items-center gap-1 sm:flex" aria-label="{% translate 'Principale' %}">
+        <a href="{% url 'course_list' %}"
+           class="rounded-md px-2.5 py-1.5 text-sm font-medium text-ink-soft hover:bg-sunken hover:text-ink">
+          {% translate "Corsi" %}
+        </a>
+        {% if user.is_staff %}
+          <a href="{% url 'admin:index' %}"
+             class="rounded-md px-2.5 py-1.5 text-sm font-medium text-ink-soft hover:bg-sunken hover:text-ink">
+            {% translate "Gestione" %}
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
 
-            // Initial load
-            loadPrismTheme();
+    <div class="ml-auto flex items-center gap-1">
 
-            // Optional: Listen for theme changes
-            const observer = new MutationObserver(loadPrismTheme);
-            observer.observe(document.body, {
-                attributes: true,
-                attributeFilter: ['class']
-            });
-        });
-    </script>
-    {% block custom_js %}{% endblock %}
+      <form action="{% url 'set_language' %}" method="post" class="hidden sm:block">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <label for="language-select" class="sr-only">{% translate "Lingua" %}</label>
+        <select id="language-select" name="language" onchange="this.form.submit()"
+                class="cursor-pointer rounded-md border border-transparent bg-transparent px-2 py-1.5 font-mono text-xs uppercase text-ink-soft hover:bg-sunken hover:text-ink">
+          {% for code, name in languages %}
+            <option value="{{ code }}" {% if code == LANGUAGE_CODE %}selected{% endif %}>{{ code }}</option>
+          {% endfor %}
+        </select>
+      </form>
 
-    <!-- Stili -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    {% block scripts %}{% endblock %}
-    {% block custom_css %}{% endblock %}
+      <button type="button" id="theme-toggle"
+              class="rounded-md p-2 text-ink-soft hover:bg-sunken hover:text-ink"
+              aria-label="{% translate 'Cambia tema' %}">
+        <svg viewBox="0 0 20 20" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="10" cy="10" r="4"/>
+          <path d="M10 1v2M10 17v2M3.6 3.6l1.4 1.4M15 15l1.4 1.4M1 10h2M17 10h2M3.6 16.4L5 15M15 5l1.4-1.4"
+                stroke-linecap="round"/>
+        </svg>
+      </button>
 
+      {% if user.is_authenticated %}
+        <div class="relative" data-menu>
+          <button type="button" data-menu-button aria-expanded="false" aria-haspopup="true"
+                  class="flex items-center gap-2 rounded-md py-1 pl-1 pr-2 hover:bg-sunken">
+            <span class="grid h-7 w-7 place-items-center rounded-md bg-pen font-mono text-xs font-bold text-pen-ink">
+              {{ user.username|slice:":2"|upper }}
+            </span>
+            <span class="hidden text-sm font-medium text-ink sm:inline">{{ user.get_short_name|default:user.username }}</span>
+          </button>
+          <div data-menu-panel hidden
+               class="absolute right-0 mt-1 w-48 overflow-hidden rounded-lg border border-rule bg-raised py-1 shadow-lift">
+            <a href="{% url 'profile' %}" class="block px-3 py-2 text-sm text-ink hover:bg-sunken">{% translate "Profilo" %}</a>
+            <a href="{% url 'course_list' %}" class="block px-3 py-2 text-sm text-ink hover:bg-sunken sm:hidden">{% translate "Corsi" %}</a>
+            <form action="{% url 'logout' %}" method="post" class="border-t border-rule">
+              {% csrf_token %}
+              <button type="submit" class="block w-full px-3 py-2 text-left text-sm text-red hover:bg-red-wash">
+                {% translate "Esci" %}
+              </button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        {% block header_auth %}
+          <a href="{% url 'login' %}" class="btn btn-primary">{% translate "Accedi" %}</a>
+        {% endblock %}
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+{% if messages %}
+  <div class="mx-auto w-full max-w-6xl px-4 pt-4 sm:px-6">
+    {% for message in messages %}
+      <div class="mb-2 rounded-lg border px-3 py-2 text-sm
+                  {% if message.tags == 'error' %}border-red bg-red-wash text-red
+                  {% elif message.tags == 'success' %}border-green bg-green-wash text-green
+                  {% else %}border-rule bg-raised text-ink{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<main id="main" class="{% block main_class %}mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 sm:py-8{% endblock %}">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="border-t border-rule py-6">
+  <div class="mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 text-center sm:px-6">
+    <p class="font-mono text-xs text-ink-faint">
+      QuestEd — {% translate "esercizi e verifiche dei corsi di programmazione" %}
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Theme toggle: explicit choice wins over the system preference and persists.
+  (function () {
+    var root = document.documentElement;
+    var button = document.getElementById("theme-toggle");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      var current = root.getAttribute("data-theme");
+      var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var effective = current || (systemDark ? "dark" : "light");
+      var next = effective === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("quested-theme", next); } catch (e) { /* nothing to persist to */ }
+      document.dispatchEvent(new CustomEvent("quested:themechange", { detail: { theme: next } }));
+    });
+  })();
+
+  // Any [data-menu] becomes a click-to-open popover that closes on outside click or Escape.
+  (function () {
+    document.querySelectorAll("[data-menu]").forEach(function (menu) {
+      var button = menu.querySelector("[data-menu-button]");
+      var panel = menu.querySelector("[data-menu-panel]");
+      if (!button || !panel) return;
+
+      function close() {
+        panel.hidden = true;
+        button.setAttribute("aria-expanded", "false");
+      }
+      button.addEventListener("click", function (event) {
+        event.stopPropagation();
+        var open = panel.hidden;
+        document.querySelectorAll("[data-menu-panel]").forEach(function (p) { p.hidden = true; });
+        panel.hidden = !open;
+        button.setAttribute("aria-expanded", String(open));
+      });
+      panel.addEventListener("click", function (event) { event.stopPropagation(); });
+      document.addEventListener("click", close);
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") close();
+      });
+    });
+  })();
+</script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

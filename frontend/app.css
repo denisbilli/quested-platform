@@ -1,0 +1,364 @@
+@import "tailwindcss";
+@source "../quizmaker/templates/**/*.html";
+@source "../quizmaker/studenttest/**/*.py";
+
+/* ---------------------------------------------------------------------------
+   QuestEd — "quaderno / lavagna"
+
+   Light is a sheet of Italian squared exercise-book paper: warm off-white, a
+   faint grid, blue-black ink, and red reserved for the things a teacher marks
+   in red (scores, deadlines, errors). Dark is the same classroom after hours:
+   a slate blackboard written in chalk. Every colour below flips between those
+   two worlds; nothing else in the stylesheet hardcodes a colour.
+--------------------------------------------------------------------------- */
+
+:root {
+  --c-paper: #fbfaf6;
+  --c-raised: #ffffff;
+  --c-sunken: #f2f1ec;
+  --c-grid: #eaedf3;
+  --c-rule: #dde2ea;
+  --c-rule-strong: #c4ccd8;
+
+  --c-ink: #16202e;
+  --c-ink-soft: #55637a;
+  --c-ink-faint: #8c97a8;
+
+  --c-pen: #2b4acb;
+  --c-pen-hover: #1f39a6;
+  --c-pen-wash: #ecefff;
+  --c-pen-ink: #ffffff;
+
+  --c-red: #c0322a;
+  --c-red-wash: #fceceb;
+  --c-green: #256d4d;
+  --c-green-wash: #e7f3ed;
+  --c-amber: #9a6510;
+  --c-amber-wash: #fbf1de;
+
+  --c-shadow: 22 32 46;
+  --shadow-card: 0 1px 2px rgb(var(--c-shadow) / 0.06), 0 8px 24px -12px rgb(var(--c-shadow) / 0.14);
+  --shadow-lift: 0 2px 4px rgb(var(--c-shadow) / 0.07), 0 18px 40px -18px rgb(var(--c-shadow) / 0.22);
+}
+
+/* The blackboard. Applied by explicit choice... */
+:root[data-theme="dark"] {
+  --c-paper: #13171d;
+  --c-raised: #1a1f27;
+  --c-sunken: #10141a;
+  --c-grid: #1c232c;
+  --c-rule: #2a323d;
+  --c-rule-strong: #3b4552;
+
+  --c-ink: #e9eef4;
+  --c-ink-soft: #9dabbb;
+  --c-ink-faint: #6f7d8d;
+
+  --c-pen: #86a1ff;
+  --c-pen-hover: #a3b8ff;
+  --c-pen-wash: #1d2740;
+  --c-pen-ink: #0f1420;
+
+  --c-red: #ff8579;
+  --c-red-wash: #2e1d1c;
+  --c-green: #6ecda1;
+  --c-green-wash: #16281f;
+  --c-amber: #e5b263;
+  --c-amber-wash: #2a2115;
+
+  --c-shadow: 0 0 0;
+  --shadow-card: 0 1px 2px rgb(var(--c-shadow) / 0.4), 0 8px 24px -12px rgb(var(--c-shadow) / 0.6);
+  --shadow-lift: 0 2px 4px rgb(var(--c-shadow) / 0.45), 0 18px 40px -18px rgb(var(--c-shadow) / 0.7);
+}
+
+/* ...and by system preference, unless light was chosen explicitly. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --c-paper: #13171d;
+    --c-raised: #1a1f27;
+    --c-sunken: #10141a;
+    --c-grid: #1c232c;
+    --c-rule: #2a323d;
+    --c-rule-strong: #3b4552;
+
+    --c-ink: #e9eef4;
+    --c-ink-soft: #9dabbb;
+    --c-ink-faint: #6f7d8d;
+
+    --c-pen: #86a1ff;
+    --c-pen-hover: #a3b8ff;
+    --c-pen-wash: #1d2740;
+    --c-pen-ink: #0f1420;
+
+    --c-red: #ff8579;
+    --c-red-wash: #2e1d1c;
+    --c-green: #6ecda1;
+    --c-green-wash: #16281f;
+    --c-amber: #e5b263;
+    --c-amber-wash: #2a2115;
+
+    --c-shadow: 0 0 0;
+    --shadow-card: 0 1px 2px rgb(var(--c-shadow) / 0.4), 0 8px 24px -12px rgb(var(--c-shadow) / 0.6);
+    --shadow-lift: 0 2px 4px rgb(var(--c-shadow) / 0.45), 0 18px 40px -18px rgb(var(--c-shadow) / 0.7);
+  }
+}
+
+@theme {
+  --color-paper: var(--c-paper);
+  --color-raised: var(--c-raised);
+  --color-sunken: var(--c-sunken);
+  --color-grid: var(--c-grid);
+  --color-rule: var(--c-rule);
+  --color-rule-strong: var(--c-rule-strong);
+
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-ink-faint: var(--c-ink-faint);
+
+  --color-pen: var(--c-pen);
+  --color-pen-hover: var(--c-pen-hover);
+  --color-pen-wash: var(--c-pen-wash);
+  --color-pen-ink: var(--c-pen-ink);
+
+  --color-red: var(--c-red);
+  --color-red-wash: var(--c-red-wash);
+  --color-green: var(--c-green);
+  --color-green-wash: var(--c-green-wash);
+  --color-amber: var(--c-amber);
+  --color-amber-wash: var(--c-amber-wash);
+
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --radius-card: 0.75rem;
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+}
+
+/* --- Self-hosted faces. No CDN: nothing leaves the student's browser. ------ */
+
+@font-face {
+  font-family: "Bricolage Grotesque Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("../fonts/bricolage-grotesque-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212;
+}
+@font-face {
+  font-family: "Bricolage Grotesque Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("../fonts/bricolage-grotesque-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Sans Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url("../fonts/instrument-sans-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212;
+}
+@font-face {
+  font-family: "Instrument Sans Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url("../fonts/instrument-sans-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Sans Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url("../fonts/instrument-sans-latin-wght-italic.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("../fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212;
+}
+@font-face {
+  font-family: "JetBrains Mono Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 800;
+  src: url("../fonts/jetbrains-mono-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* --- Base ---------------------------------------------------------------- */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--c-paper);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    /* The squared page. Two hairlines at 28px; barely there, but it is why the
+       app reads as a notebook rather than a dashboard. */
+    background-image:
+      linear-gradient(to right, var(--c-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--c-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--c-ink);
+  }
+
+  code, pre, kbd {
+    font-family: var(--font-mono);
+    font-variant-ligatures: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-pen);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--c-pen);
+    color: var(--c-pen-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Components ---------------------------------------------------------- */
+
+@layer components {
+  .surface {
+    background-color: var(--c-raised);
+    border: 1px solid var(--c-rule);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-ink-faint);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary {
+    background-color: var(--c-pen);
+    color: var(--c-pen-ink);
+  }
+  .btn-primary:hover { background-color: var(--c-pen-hover); }
+
+  .btn-quiet {
+    background-color: transparent;
+    border-color: var(--c-rule-strong);
+    color: var(--c-ink);
+  }
+  .btn-quiet:hover { background-color: var(--c-sunken); }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--c-ink-soft);
+  }
+  .btn-ghost:hover { background-color: var(--c-sunken); color: var(--c-ink); }
+
+  .btn-danger {
+    background-color: transparent;
+    border-color: var(--c-red);
+    color: var(--c-red);
+  }
+  .btn-danger:hover { background-color: var(--c-red-wash); }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .chip-neutral { background: var(--c-sunken); color: var(--c-ink-soft); }
+  .chip-done    { background: var(--c-green-wash); color: var(--c-green); }
+  .chip-flag    { background: var(--c-amber-wash); color: var(--c-amber); }
+  .chip-score   { background: var(--c-red-wash); color: var(--c-red); }
+  .chip-pen     { background: var(--c-pen-wash); color: var(--c-pen); }
+
+  .field {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    background-color: var(--c-paper);
+    border: 1px solid var(--c-rule-strong);
+    border-radius: 0.5rem;
+    color: var(--c-ink);
+    font-size: 0.9375rem;
+    font-family: inherit;
+  }
+  .field::placeholder { color: var(--c-ink-faint); }
+  .field:focus {
+    outline: none;
+    border-color: var(--c-pen);
+    box-shadow: 0 0 0 3px var(--c-pen-wash);
+  }
+  .field-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--c-ink-soft);
+  }
+
+  .link {
+    color: var(--c-pen);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .link:hover { color: var(--c-pen-hover); }
+}

@@ -1,0 +1,31 @@
+{% load i18n %}
+{% comment %}One node on the exercise rail. Expects `exercise`, `state`, `test`.{% endcomment %}
+<li class="exercise-item relative flex gap-4 py-2" data-type="{{ exercise.type }}" data-score="{{ exercise.score|default:0 }}">
+  <span class="relative z-10 bg-paper py-1.5">{% include 'partials/exercise_node.html' %}</span>
+
+  <div class="surface flex flex-1 flex-col gap-2 p-4 transition-shadow hover:shadow-lift sm:flex-row sm:items-center sm:justify-between">
+    <div class="min-w-0">
+      <a href="{% url 'submit_exercise' exercise.id %}"
+         class="font-display text-base font-semibold text-ink hover:text-pen">
+        {{ exercise.title }}
+      </a>
+      <p class="mt-0.5 font-mono text-xs text-ink-faint">{{ exercise.get_type_display }}</p>
+    </div>
+
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      {% if test.is_graded and exercise.score %}
+        <span class="chip chip-score">{{ exercise.score }} {% translate "punti" %}</span>
+      {% endif %}
+      {% if user.is_staff %}
+        <span class="chip chip-neutral" title="{% translate 'Studenti che lo hanno completato' %}">{{ exercise.signed_count }} ✓</span>
+        <span class="chip chip-pen" title="{% translate 'Valutazione media' %}">{{ exercise.average_rating|default:0|floatformat:1 }} ★</span>
+      {% elif state == 'done' %}
+        <span class="chip chip-done">{% translate "consegnato" %}</span>
+      {% elif state == 'flag' %}
+        <span class="chip chip-flag">{% translate "segnato" %}</span>
+      {% else %}
+        <span class="chip chip-neutral">{% translate "da fare" %}</span>
+      {% endif %}
+    </div>
+  </div>
+</li>

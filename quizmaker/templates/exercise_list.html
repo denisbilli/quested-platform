@@ -1,239 +1,187 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load static %}
 
-{% block filters %}
-{% endblock %}
+{% block title %}{{ test.name }} — QuestEd{% endblock %}
 
 {% block content %}
-<div class="xs-pd-20-10">
-    <div class="min-height-200px">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-md-3 col-sm-12">
-                    <div class="title">
-                        <h4>{{ test.name }}</h4>
-                    </div>
-                    <nav aria-label="breadcrumb" role="navigation">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'test_list_by_course' course_id=test.course.id %}">{% translate "Corsi" %}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ test.name }}</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="col-md-9 col-sm-12">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="d-flex justify-content-end align-items-center flex-grow-1">
-                            {% if test.is_graded %}
-                            <h4 class="mx-auto">{% translate "Punteggio totale" %}: {{ total_score }}</h4>
-                            {% endif %}
-                            <button id="toggleView" class="btn btn-info mr-2">{% translate "Tabella" %}</button>
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {% translate "Nessun filtro" %}
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item exercise-filter" href="#" data-filter="all">{% translate "Nessun filtro" %}</a>
-                                    <a class="dropdown-item exercise-filter" href="#" data-filter="O">{% translate "Domanda aperta" %}</a>
-                                    <a class="dropdown-item exercise-filter" href="#" data-filter="M">{% translate "Scelta multipla" %}</a>
-                                    <a class="dropdown-item exercise-filter" href="#" data-filter="C">{% translate "Codice" %}</a>
-                                    <a class="dropdown-item exercise-filter" href="#" data-filter="D">{% translate "Diagramma di flusso" %}</a>
-                                </div>
-                            </div>
-                            {% if test.is_graded %}
-                            <div class="dropdown ml-2">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownSortButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {% translate "Punteggio più basso" %}
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownSortButton">
-                                    <a class="dropdown-item sort-filter" href="#" data-sort="score:asc">{% translate "Punteggio più basso" %}</a>
-                                    <a class="dropdown-item sort-filter" href="#" data-sort="score:desc">{% translate "Punteggio più alto" %}</a>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<nav aria-label="{% translate 'Percorso' %}" class="mb-5 font-mono text-xs text-ink-faint">
+  <a href="{% url 'course_list' %}" class="hover:text-ink">{% translate "Corsi" %}</a>
+  {% if test.course %}
+    <span class="px-1.5">/</span>
+    <a href="{% url 'test_list_by_course' test.course.id %}" class="hover:text-ink">{{ test.course.name }}</a>
+  {% endif %}
+  <span class="px-1.5">/</span><span class="text-ink-soft">{{ test.name }}</span>
+</nav>
 
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 mb-30">
-                <div class="pd-20 card-box height-100-p">
-                    <!-- Dettagli del Test -->
-                    <h5 class="text-center h5 mb-0">{{ test.name }}</h5>
-                    <div class="profile-info">
-                        <h5 class="mb-20 h5 text-blue">{% translate "Informazioni sul test" %}</h5>
-
-                        <div class="grid-container">
-                            <div class="grid-item">
-                                <div class="label">{% translate "Descrizione" %}:</div>
-                                <div class="content">{{ test.description }}</div>
-                            </div>
-                            {% if test.is_graded %}
-                            <div class="grid-item">
-                                <div class="label">{% translate "Punteggio totale" %}:</div>
-                                <div class="content">{{ total_score }}</div>
-                            </div>
-                            <div class="grid-item">
-                                <div class="label">{% translate "Consegna" %}:</div>
-                                <div class="content">{{ test.due_date }}</div>
-                            </div>
-                            {% endif %}
-                            <div class="grid-item">
-                                <div class="label">{% translate "Creato da" %}:</div>
-                                <div class="content">{{ test.creator.get_full_name }}</div>
-                            </div>
-                        </div>
-                        <!-- Bottone per Tornare Indietro -->
-                        <button type="button" onclick="location.href='{% url 'test_list_by_course' course_id=test.course.id %}'" class="btn btn-secondary mt-4">{% translate "Indietro" %}</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 mb-30">
-                <div class="card-box mb-10">
-                    <div class="pd-20">
-                        <h4 class="text-blue h4">{% translate "Esercizi Disponibili" %}</h4>
-                    </div>
-                    <div class="pb-20" style="padding: 20px">
-                        {% if exercises %}
-                            <div class="row" id="exercise-cards">
-                                {% for exercise in exercises %}
-                                <div class="col-md-4 mb-4 exercise-card mix" data-type="{{ exercise.type }}" {% if exercise.test.is_graded %}data-score="{{ exercise.score }}"{% else %}data-score="0"{% endif %}>
-                                    <div class="card h-100">
-                                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                                            <h5 class="card-title text-center">
-                                                <a href="{% url 'submit_exercise' exercise.id %}">{{ exercise.title }}</a>
-                                            </h5>
-                                            <p class="card-text">{{ exercise.get_type_display }}</p>
-                                            {% if exercise.test.is_graded %}
-                                            <p class="card-text"><small class="text-muted">{% translate "Punti" %}: {{ exercise.score }}</small></p>
-                                            {% endif %}
-                                        </div>
-                                        <div class="card-footer d-flex justify-content-between">
-                                            {% if request.user.is_superuser %}
-                                                <span class="badge badge-secondary">{% translate "Completato" %}: {{ exercise.signed_count }}</span>
-                                                <span class="badge badge-info">{% translate "Valutazione Media" %}: {{ exercise.average_rating|default:'0'|floatformat:1 }}</span>
-                                            {% else %}
-                                                {% if exercise.id in completed_exercises %}
-                                                    <i class="fas fa-check text-success" title="{% translate 'Fatto' %}"></i>
-                                                {% elif exercise.id in signed_exercises %}
-                                                    <i class="fas fa-flag text-warning" title="{% translate 'Contrassegnato' %}"></i>
-                                                {% endif %}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="table-view" id="exercise-table" style="display: none;">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">{% translate "Titolo" %}</th>
-                        <th scope="col">{% translate "Tipologia" %}</th>
-                        <th scope="col">{% translate "Punteggio" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for exercise in exercises %}
-                    <tr class="exercise-element mix" data-type="{{ exercise.type }}" {% if exercise.test.is_graded %}data-score="{{ exercise.score }}"{% else %}data-score="0"{% endif %}>
-                        <td>
-                            <a href="{% url 'submit_exercise' exercise.id %}">{{ exercise.title }}</a>
-                            {% if request.user.is_superuser %}
-                                <span class="badge badge-secondary">{% translate "Completato" %}: {{ exercise.signed_count }}</span>
-                                <span class="badge badge-info">{% translate "Valutazione Media" %}: {{ exercise.average_rating|default:'N/A'|floatformat:1 }}</span>
-                            {% endif %}
-                            {% if exercise.id in completed_exercises %}
-                                <i class="fas fa-check text-success" title="{% translate 'Fatto' %}"></i>
-                            {% elif exercise.id in signed_exercises %}
-                                <i class="fas fa-flag text-warning" title="{% translate 'Contrassegnato' %}"></i>
-                            {% endif %}
-                        </td>
-                        <td>{{ exercise.get_type_display }}</td>
-                        <td>{% if exercise.test.is_graded %}{{ exercise.score }}{% endif %}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3">{% translate "Non ci sono esercizi." %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-                        {% else %}
-                            <p class="mt-5">{% translate "Non ci sono esercizi." %}</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+<header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <p class="eyebrow">{% if test.is_graded %}{% translate "Verifica valutata" %}{% else %}{% translate "Esercitazione" %}{% endif %}</p>
+    <h1 class="mt-1 text-3xl sm:text-4xl">{{ test.name }}</h1>
+    {% if test.description %}<p class="mt-3 max-w-prose text-ink-soft">{{ test.description }}</p>{% endif %}
+  </div>
+  {% if test.is_graded %}
+    <div class="shrink-0 text-left sm:text-right">
+      <p class="eyebrow">{% translate "Punteggio totale" %}</p>
+      <p class="font-display text-4xl font-bold text-red">{{ total_score }}</p>
+      {% if test.due_date %}
+        <p class="mt-1 font-mono text-xs text-ink-faint">{% translate "consegna" %} {{ test.due_date|date:"d/m/Y H:i" }}</p>
+      {% endif %}
     </div>
-</div>
+  {% endif %}
+</header>
+
+{% if exercises %}
+  <div class="mb-6 flex flex-wrap items-center gap-2 border-y border-rule py-3">
+    <span class="eyebrow mr-1">{% translate "Filtra" %}</span>
+    <button type="button" data-filter="all" class="filter-btn chip chip-pen">{% translate "Tutti" %}</button>
+    <button type="button" data-filter="O" class="filter-btn chip chip-neutral">{% translate "Domanda aperta" %}</button>
+    <button type="button" data-filter="M" class="filter-btn chip chip-neutral">{% translate "Scelta multipla" %}</button>
+    <button type="button" data-filter="C" class="filter-btn chip chip-neutral">{% translate "Codice" %}</button>
+    <button type="button" data-filter="D" class="filter-btn chip chip-neutral">{% translate "Diagramma di flusso" %}</button>
+
+    <div class="ml-auto flex items-center gap-2">
+      {% if test.is_graded %}
+        <label for="sort-select" class="sr-only">{% translate "Ordina" %}</label>
+        <select id="sort-select" class="field w-auto py-1 font-mono text-xs">
+          <option value="default">{% translate "Ordine del test" %}</option>
+          <option value="asc">{% translate "Punteggio crescente" %}</option>
+          <option value="desc">{% translate "Punteggio decrescente" %}</option>
+        </select>
+      {% endif %}
+      <button type="button" id="view-toggle" class="btn btn-quiet py-1 text-xs"
+              data-label-rail="{% translate 'Vista tabella' %}" data-label-table="{% translate 'Vista percorso' %}">
+        {% translate "Vista tabella" %}
+      </button>
+    </div>
+  </div>
+
+  {# --- The flow rail: exercises as nodes on a single path through the test. --- #}
+  <ol id="rail" class="relative">
+    <span aria-hidden="true" class="absolute left-[1.3125rem] top-4 bottom-4 w-0.5 rounded-full bg-rule-strong"></span>
+    {% for exercise in exercises %}
+      {% if exercise.id in completed_exercises %}{% with state='done' %}{% include 'partials/_rail_item.html' %}{% endwith %}
+      {% elif exercise.id in signed_exercises %}{% with state='flag' %}{% include 'partials/_rail_item.html' %}{% endwith %}
+      {% else %}{% with state='todo' %}{% include 'partials/_rail_item.html' %}{% endwith %}
+      {% endif %}
+    {% endfor %}
+  </ol>
+
+  <div id="table-view" hidden class="surface overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="border-b border-rule text-left">
+        <tr class="eyebrow">
+          <th scope="col" class="px-4 py-3">{% translate "Esercizio" %}</th>
+          <th scope="col" class="px-4 py-3">{% translate "Tipologia" %}</th>
+          {% if test.is_graded %}<th scope="col" class="px-4 py-3 text-right">{% translate "Punti" %}</th>{% endif %}
+          <th scope="col" class="px-4 py-3 text-right">{% translate "Stato" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for exercise in exercises %}
+          <tr class="exercise-row border-b border-rule last:border-0"
+              data-type="{{ exercise.type }}" data-score="{{ exercise.score|default:0 }}">
+            <td class="px-4 py-3">
+              <a href="{% url 'submit_exercise' exercise.id %}" class="link font-medium">{{ exercise.title }}</a>
+            </td>
+            <td class="px-4 py-3 text-ink-soft">{{ exercise.get_type_display }}</td>
+            {% if test.is_graded %}<td class="px-4 py-3 text-right font-mono text-red">{{ exercise.score|default:"—" }}</td>{% endif %}
+            <td class="px-4 py-3 text-right">
+              {% if user.is_staff %}
+                <span class="chip chip-neutral">{{ exercise.signed_count }} ✓</span>
+                <span class="chip chip-pen">{{ exercise.average_rating|default:0|floatformat:1 }} ★</span>
+              {% elif exercise.id in completed_exercises %}
+                <span class="chip chip-done">{% translate "consegnato" %}</span>
+              {% elif exercise.id in signed_exercises %}
+                <span class="chip chip-flag">{% translate "segnato" %}</span>
+              {% else %}
+                <span class="chip chip-neutral">{% translate "da fare" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p id="empty-filter" hidden class="surface mt-4 px-6 py-10 text-center text-sm text-ink-soft">
+    {% translate "Nessun esercizio di questo tipo in questa verifica." %}
+  </p>
+{% else %}
+  <div class="surface px-6 py-16 text-center">
+    <h2 class="text-xl">{% translate "Nessun esercizio" %}</h2>
+    <p class="mx-auto mt-2 max-w-sm text-sm text-ink-soft">{% translate "Questa verifica non contiene ancora esercizi." %}</p>
+  </div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/mixitup@3/dist/mixitup.min.js"></script>
 <script>
-$(document).ready(function() {
-  var mixer = mixitup('#exercise-cards', {
-    "load": {
-        "sort": "score:asc"
-    },
-    "animation": {
-        "duration": 250,
-        "nudge": true,
-        "reverseOut": false,
-        "effects": "fade translateZ(-100px)"
+  (function () {
+    var rail = document.getElementById("rail");
+    if (!rail) return;
+
+    var table = document.getElementById("table-view");
+    var emptyNote = document.getElementById("empty-filter");
+    var viewToggle = document.getElementById("view-toggle");
+    var sortSelect = document.getElementById("sort-select");
+    var filterButtons = Array.prototype.slice.call(document.querySelectorAll(".filter-btn"));
+
+    var railItems = Array.prototype.slice.call(rail.querySelectorAll(".exercise-item"));
+    var tableBody = table ? table.querySelector("tbody") : null;
+    var rowItems = tableBody ? Array.prototype.slice.call(tableBody.querySelectorAll(".exercise-row")) : [];
+
+    // Remember the authored order so "Ordine del test" can restore it.
+    railItems.forEach(function (el, i) { el.dataset.index = i; });
+    rowItems.forEach(function (el, i) { el.dataset.index = i; });
+
+    var activeFilter = "all";
+
+    function applyFilter() {
+      var visible = 0;
+      [railItems, rowItems].forEach(function (group) {
+        group.forEach(function (el) {
+          var match = activeFilter === "all" || el.dataset.type === activeFilter;
+          el.hidden = !match;
+        });
+      });
+      visible = railItems.filter(function (el) { return !el.hidden; }).length;
+      if (emptyNote) emptyNote.hidden = visible > 0;
+      rail.hidden = visible === 0 || (table && !table.hidden);
     }
-  });
-  mixer.filter('.exercise-card');
 
-  var mixer2 = mixitup('#exercise-table', {
-    "load": {
-        "sort": "score:asc"
-    },
-    "animation": {
-        "duration": 250,
-        "nudge": true,
-        "reverseOut": false,
-        "effects": "fade translateZ(-100px)"
+    filterButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        activeFilter = button.dataset.filter;
+        filterButtons.forEach(function (other) {
+          var on = other === button;
+          other.classList.toggle("chip-pen", on);
+          other.classList.toggle("chip-neutral", !on);
+        });
+        applyFilter();
+      });
+    });
+
+    if (sortSelect) {
+      sortSelect.addEventListener("change", function () {
+        var mode = sortSelect.value;
+        function order(a, b) {
+          if (mode === "default") return a.dataset.index - b.dataset.index;
+          var diff = Number(a.dataset.score) - Number(b.dataset.score);
+          return mode === "asc" ? diff : -diff;
+        }
+        railItems.slice().sort(order).forEach(function (el) { rail.appendChild(el); });
+        if (tableBody) rowItems.slice().sort(order).forEach(function (el) { tableBody.appendChild(el); });
+      });
     }
-  });
-  mixer2.filter('.exercise-element');
 
-  $(".exercise-filter").click(function(e) {
-      e.preventDefault();
-      var selectedType = $(this).data('filter');
-      var filterText = $(this).text();
-      console.log(selectedType);
-      if (selectedType == 'all') {
-          mixer.filter('.exercise-card'); // This will show all exercises
-          mixer2.filter('.exercise-element'); // This will show all exercises
-      } else {
-          mixer.filter('.exercise-card[data-type="' + selectedType + '"]'); // This will filter based on the selected type
-          mixer2.filter('.exercise-element[data-type="' + selectedType + '"]'); // This will filter based on the selected type
-      }
-      $('#dropdownMenuButton').text(filterText);
-  });
-
-  $(".sort-filter").click(function(e) {
-      e.preventDefault();
-      var sortValue = $(this).data('sort');
-      var sortText = $(this).text();
-      $('#dropdownSortButton').text(sortText);
-      mixer.sort(sortValue);
-  });
-
-  $('#toggleView').click(function() {
-      $('.cards-view').toggle();
-      $('.table-view').toggle();
-  });
-});
+    if (viewToggle && table) {
+      viewToggle.addEventListener("click", function () {
+        var showTable = table.hidden;
+        table.hidden = !showTable;
+        viewToggle.textContent = showTable ? viewToggle.dataset.labelTable : viewToggle.dataset.labelRail;
+        applyFilter();
+      });
+    }
+  })();
 </script>
 {% endblock %}

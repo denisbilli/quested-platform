@@ -1,272 +1,265 @@
 {% extends 'base.html' %}
-{% load i18n %}
-{% load form_tags %}
-{% load static %}
+{% load i18n form_tags static %}
+
+{% block title %}{{ exercise.title }} — QuestEd{% endblock %}
 
 {% block content %}
-<div class="xs-pd-20-10">
-    <div class="min-height-200px">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="title">
-                        <h4>{{ exercise.title }}</h4>
-                    </div>
-                    <nav aria-label="breadcrumb" role="navigation">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="/{{ LANGUAGE_CODE }}">{% translate "Home" %}</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'test_list_by_course' course_id=exercise.test.course.id %}">{{ exercise.test.course.name }}</a></li>
-                            <li class="breadcrumb-item"><a href="{% url 'exercise_list' exercise.test.id %}">{{ exercise.test.name }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ exercise.title }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
+<nav aria-label="{% translate 'Percorso' %}" class="mb-5 font-mono text-xs text-ink-faint">
+  <a href="{% url 'course_list' %}" class="hover:text-ink">{% translate "Corsi" %}</a>
+  {% if exercise.test.course %}
+    <span class="px-1.5">/</span>
+    <a href="{% url 'test_list_by_course' exercise.test.course.id %}" class="hover:text-ink">{{ exercise.test.course.name }}</a>
+  {% endif %}
+  <span class="px-1.5">/</span>
+  <a href="{% url 'exercise_list' exercise.test.id %}" class="hover:text-ink">{{ exercise.test.name }}</a>
+  <span class="px-1.5">/</span><span class="text-ink-soft">{{ exercise.title }}</span>
+</nav>
 
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-xl-3 col-lg-3 col-md-4 col-sm-12 mb-30">
-                <div class="pd-20 card-box height-100-p">
-                    <!-- Dettagli dell'Esercizio -->
-                    <h5 class="text-blue mb-20">{% translate "Dettagli Esercizio" %}</h5>
-                    <ul class="list-unstyled">
-                        <li><strong>{% translate "Tipologia" %}:</strong> {{ exercise.get_type_display }}</li>
-                        {% if exercise.test.is_graded %}
-                        <li><strong>{% translate "Punti" %}:</strong> {{ exercise.score }}</li>
-                        {% endif %}
-                    </ul>
-                    <!-- Footer in Sidebar -->
-                    <form action="{% url 'submit_exercise' exercise.id %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="mt-4">
-                            {% if not exercise.test.is_graded %}
-                                <button type="button" onclick="showSolution()" class="btn btn-info btn-block mb-2" id="btnShowSolution">{% translate "Mostra soluzione" %}</button>
-                                <input type="checkbox" name="signed" id="checkboxSignExercise" style="display: none;" {% if user_exercise.signed %}checked{% endif %}>
-                                <button onclick="flagExercise(this.form)" class="btn {% if not user_exercise.signed %}btn-success{% else %}btn-danger{% endif %} btn-block mb-2" id="btnSignExercise">{% if not user_exercise.signed %}{% translate "Completato" %}{% else %}{% translate "Rimuovi completato" %}{% endif %}</button>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <span class="mr-2">{% translate "Valuta l'esercizio" %}: </span>
-                                    <div class="star-rating">
-                                        <input id="star_none" type="radio" name="rating" value="0" onchange="this.form.submit()">
-                                        <label for="star_none" title="Cancella" style="margin-left: 20px;font-size: 1em;vertical-align: middle;line-height: 3em;">{% translate "Cancella" %}</label>
-                                        {% for star in "54321"|make_list %}
-                                            <input id="star{{ star }}" type="radio" name="rating" value="{{ star }}" {% if user_exercise.stars == star|to_int %}checked{% endif %} onchange="this.form.submit()">
-                                            <label for="star{{ star }}" title="{{ star }} stars">&#9733;</label>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% else %}
-                                <button type="submit" class="btn btn-primary btn-block mb-2" id="btnSendAnswer">{% translate "Invia Risposta" %}</button>
-                            {% endif %}
-                            <button type="button" onclick="location.href='{% url 'exercise_list' exercise.test.id %}'" class="btn btn-secondary btn-block">{% translate "Indietro" %}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 mb-30">
-                <div class="card-box">
-                    <div class="pd-20">
-                        <h5 class="text-info mb-20">{% translate "Descrizione" %}:</h5>
-                        <div class="text-justify mb-4">{{ exercise.description|safe }}</div>
-                        <h5 class="text-info mb-20">{% translate "Risposta" %}:</h5>
-                        <form action="{% url 'submit_exercise' exercise.id %}" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {% if exercise.type == 'O' %}
-                                <div class="form-group">
-                                    <textarea class="form-control" name="answer_text" rows="5">{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}</textarea>
-                                </div>
-                            {% elif exercise.type == 'M' %}
-                                {% for choice in exercise.choices.all %}
-                                <div class="form-check {% if choice.is_correct %}correct{% endif %}">
-                                    <input class="form-check-input" type="radio" name="answer_choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" {% if submission and submission.answer_choice.id == choice.id %}checked{% endif %}>
-                                    <label class="form-check-label" for="choice{{ forloop.counter }}">
-                                        {{ choice.text }}
-                                    </label>
-                                </div>
-                                {% endfor %}
-                            {% elif exercise.type == 'C' %}
-<pre>
-<code class="language-cpp" id="answer">#include &lt;iostream&gt;
-
-int main() {
-    // {% translate "Scrivi qui il tuo esercizio" %}
-    return 0;
-}</code>
-</pre>
-                                {% if exercise.test.is_graded %}
-                                    <!-- <button type="button" onclick="pasteCode()" class="btn btn-primary">{% translate "Incolla il tuo codice" %}</button> -->
-                                    <div class="custom-file mt-3">
-                                        <input type="file" class="custom-file-input" id="submitFile" name="file" accept=".cpp">
-                                        <label class="custom-file-label" for="submitFile">{% translate "Scegli il file" %}</label>
-                                    </div>
-                                {% endif %}
-                                <input type="hidden" name="answer_text" id="answer_text" value="{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}">
-                            {% elif exercise.type == 'D' %}
-                                <div class="form-group">
-                                    <textarea class="form-control" name="answer_text" rows="5" {% if not exercise.test.is_graded %}id="open_answer" style="display: none"{% endif %}>{% if submission %}{{ submission.answer_text }}{% elif not exercise.test.is_graded %}{{ exercise.expected_answer }}{% endif %}</textarea>
-                                </div>
-                            {% endif %}
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+<header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div class="flex items-start gap-3">
+    {% with state='todo' %}{% include 'partials/exercise_node.html' %}{% endwith %}
+    <div>
+      <p class="eyebrow">{{ exercise.get_type_display }}</p>
+      <h1 class="mt-1 text-2xl sm:text-3xl">{{ exercise.title }}</h1>
     </div>
+  </div>
+  <div class="flex items-center gap-2">
+    {% if exercise.test.is_graded and exercise.score %}
+      <span class="chip chip-score">{{ exercise.score }} {% translate "punti" %}</span>
+    {% endif %}
+    <a href="{% url 'exercise_list' exercise.test.id %}" class="btn btn-ghost">{% translate "Torna alla verifica" %}</a>
+  </div>
+</header>
+
+<div class="grid gap-6 lg:grid-cols-2">
+
+  {# ---------------------------- The statement ---------------------------- #}
+  <section class="surface p-6">
+    <h2 class="eyebrow mb-4">{% translate "Consegna" %}</h2>
+    <div id="statement" class="exercise-prose text-ink">{{ exercise.description|safe }}</div>
+  </section>
+
+  {# ------------------------- Answer / self-assessment -------------------- #}
+  <section class="surface flex flex-col p-6">
+
+    {% if exercise.test.is_graded %}
+      <h2 class="eyebrow mb-4">{% translate "La tua risposta" %}</h2>
+
+      <form action="{% url 'submit_exercise' exercise.id %}" method="post" enctype="multipart/form-data"
+            class="flex flex-1 flex-col gap-4">
+        {% csrf_token %}
+
+        {% if form.errors %}
+          <div class="rounded-lg border border-red bg-red-wash px-3 py-2 text-sm text-red">
+            {% for field, errors in form.errors.items %}{% for error in errors %}<p>{{ error }}</p>{% endfor %}{% endfor %}
+          </div>
+        {% endif %}
+
+        {% if exercise.type == 'M' %}
+          <fieldset class="flex flex-col gap-2">
+            <legend class="sr-only">{% translate "Scegli una risposta" %}</legend>
+            {% for choice in exercise.choices.all %}
+              <label class="choice flex cursor-pointer items-center gap-3 rounded-lg border border-rule px-3 py-2.5 hover:border-pen hover:bg-pen-wash
+                            has-[:checked]:border-pen has-[:checked]:bg-pen-wash">
+                <input type="radio" name="answer_choice" value="{{ choice.id }}"
+                       class="h-4 w-4 accent-[var(--c-pen)]"
+                       {% if submission and submission.answer_choice_id == choice.id %}checked{% endif %}>
+                <span class="text-sm">{{ choice.text }}</span>
+              </label>
+            {% endfor %}
+          </fieldset>
+
+        {% elif exercise.type == 'C' %}
+          <div>
+            <label for="answer_text" class="field-label">{% translate "Incolla qui il tuo codice" %}</label>
+            <textarea id="answer_text" name="answer_text" rows="14" spellcheck="false"
+                      class="field font-mono text-[13px] leading-relaxed"
+                      placeholder="#include &lt;iostream&gt;&#10;&#10;int main() {&#10;    return 0;&#10;}">{% if submission %}{{ submission.answer_text|default:'' }}{% endif %}</textarea>
+          </div>
+          <div>
+            <label for="submitFile" class="field-label">{% translate "Oppure allega un file" %}</label>
+            <input type="file" id="submitFile" name="file"
+                   class="field cursor-pointer file:mr-3 file:rounded-md file:border-0 file:bg-pen file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[var(--c-pen-ink)]">
+            {% if submission.file %}
+              <p class="mt-1.5 font-mono text-xs text-ink-faint">
+                {% translate "già consegnato" %}: {{ submission.file.name|cut:"/"|truncatechars:40 }}
+              </p>
+            {% endif %}
+          </div>
+
+        {% else %}
+          <div class="flex flex-1 flex-col">
+            <label for="answer_text" class="field-label">{% translate "Risposta" %}</label>
+            <textarea id="answer_text" name="answer_text" rows="12"
+                      class="field flex-1">{% if submission %}{{ submission.answer_text|default:'' }}{% endif %}</textarea>
+          </div>
+        {% endif %}
+
+        <div class="mt-auto flex items-center justify-between gap-3 border-t border-rule pt-4">
+          <span class="font-mono text-xs text-ink-faint">
+            {% if submission %}{% translate "già consegnato — puoi correggere" %}{% else %}{% translate "non ancora consegnato" %}{% endif %}
+          </span>
+          <button type="submit" class="btn btn-primary">{% translate "Consegna" %}</button>
+        </div>
+      </form>
+
+    {% else %}
+      {# Practice mode: nothing is submitted. Try it, reveal the solution, mark it. #}
+      <h2 class="eyebrow mb-4">{% translate "Esercitazione" %}</h2>
+      <p class="mb-4 text-sm text-ink-soft">
+        {% translate "Prova a risolverlo da solo, poi confronta con la soluzione." %}
+      </p>
+
+      <button type="button" id="reveal" class="btn btn-quiet self-start">{% translate "Mostra soluzione" %}</button>
+
+      <div id="solution" hidden class="mt-4 rounded-lg border border-green bg-green-wash p-4">
+        <h3 class="eyebrow mb-2 text-green">{% translate "Soluzione" %}</h3>
+        {% if exercise.type == 'M' %}
+          <ul class="flex flex-col gap-1.5">
+            {% for choice in exercise.choices.all %}
+              <li class="flex items-center gap-2 text-sm {% if choice.is_correct %}font-semibold text-green{% else %}text-ink-soft line-through{% endif %}">
+                <span aria-hidden="true">{% if choice.is_correct %}✓{% else %}✕{% endif %}</span>{{ choice.text }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% elif exercise.type == 'C' %}
+          <pre class="overflow-x-auto rounded-md bg-sunken p-3 text-[13px]"><code class="language-cpp">{{ exercise.expected_answer|default:"—" }}</code></pre>
+        {% else %}
+          <div class="exercise-prose text-sm">{{ exercise.expected_answer|default:"—"|linebreaks }}</div>
+        {% endif %}
+      </div>
+
+      <form action="{% url 'submit_exercise' exercise.id %}" method="post"
+            class="mt-auto flex flex-col gap-4 border-t border-rule pt-4">
+        {% csrf_token %}
+
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-sm font-medium text-ink-soft">{% translate "Quanto era difficile?" %}</span>
+          {# Reversed row so the CSS sibling selector can light up every star to the left. #}
+          <div class="star-rating flex flex-row-reverse items-center justify-end">
+            {% for star in "54321"|make_list %}
+              <input type="radio" id="star{{ star }}" name="rating" value="{{ star }}" class="sr-only"
+                     {% if user_exercise.stars == star|to_int %}checked{% endif %}
+                     onchange="this.form.submit()">
+              <label for="star{{ star }}" class="cursor-pointer px-0.5 text-2xl leading-none"
+                     title="{% blocktranslate %}{{ star }} stelle{% endblocktranslate %}">★<span class="sr-only">{{ star }}</span></label>
+            {% endfor %}
+            {% if user_exercise.stars %}
+              <button type="submit" name="rating" value="0" class="btn btn-ghost mr-2 py-0.5 text-xs">
+                {% translate "azzera" %}
+              </button>
+            {% endif %}
+          </div>
+        </div>
+
+        <input type="checkbox" name="signed" id="signed" class="sr-only" {% if user_exercise.signed %}checked{% endif %}>
+        <button type="submit" id="toggle-signed"
+                class="btn {% if user_exercise.signed %}btn-danger{% else %}btn-primary{% endif %} w-full">
+          {% if user_exercise.signed %}{% translate "Togli da completati" %}{% else %}{% translate "Segna come completato" %}{% endif %}
+        </button>
+      </form>
+    {% endif %}
+  </section>
 </div>
 {% endblock %}
 
-
-{% block custom_css %}
+{% block head_extra %}
 <style>
-input[type="radio"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    padding: 3px;
-    background-clip: content-box;
-    border: 2px solid #bbbbbb;
-    background-color: #e7e6e7;
-    border-radius: 50%;
-}
+  /* Teacher-authored statement HTML: give it readable defaults without a plugin. */
+  .exercise-prose > * + * { margin-top: 0.85rem; }
+  .exercise-prose p { line-height: 1.65; }
+  .exercise-prose ul, .exercise-prose ol { padding-left: 1.4rem; }
+  .exercise-prose ul { list-style: disc; }
+  .exercise-prose ol { list-style: decimal; }
+  .exercise-prose code { background: var(--c-sunken); padding: 0.1em 0.35em; border-radius: 0.25rem; font-size: 0.9em; }
+  .exercise-prose pre { background: var(--c-sunken); padding: 0.85rem; border-radius: 0.5rem; overflow-x: auto; }
+  .exercise-prose pre code { background: none; padding: 0; }
+  .exercise-prose .mermaid { display: flex; justify-content: center; padding: 0.5rem 0; }
+  .exercise-prose img { max-width: 100%; height: auto; border-radius: 0.5rem; }
 
-.form-check-label {
-    margin-left: 20px;
-    line-height: 2.5em;  /* Adjust this value as per your requirement */
-}
-
-input[type="radio"]:checked {
-    background-color: #4a90e2;
-}
-
-div.form-check {
-    display: flex;
-    align-items: center;
-}
-.star-rating {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-around;
-    width: 120px;
-}
-
-.star-rating input {
-    display: none;
-}
-
-.star-rating label {
-    color: lightgray;
-    font-size: 30px;
-}
-
-.star-rating input:checked ~ label,
-.star-rating label:hover,
-.star-rating label:hover ~ label {
-    color: gold;
-}
+  .star-rating label { color: var(--c-rule-strong); transition: color 0.12s ease; }
+  .star-rating input:checked ~ label,
+  .star-rating label:hover,
+  .star-rating label:hover ~ label { color: var(--c-amber); }
 </style>
 {% endblock %}
 
-{% block custom_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js" integrity="sha512-6a80OTZVmEJhqYJUmYd5z8yHUCDlYnj6q9XwB/gKOEyNQV/Q8u+XeSG59a2ZKFEHGTYzgfOQKYEBtrZV7vBr+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% block scripts %}
+<script src="{% static 'vendor/prism.js' %}" data-manual></script>
+<script src="{% static 'vendor/prism-clike.min.js' %}"></script>
+<script src="{% static 'vendor/prism-c.min.js' %}"></script>
+<script src="{% static 'vendor/prism-cpp.min.js' %}"></script>
+<script src="{% static 'vendor/prism-python.min.js' %}"></script>
+
 <script>
-    var is_graded = "{{ exercise.test.is_graded|escapejs }}" == 'False' ? false : true;
-
-    function highlightCode() {
-        Prism.highlightAll();
+  (function () {
+    // Reveal the worked solution (practice exercises only).
+    var reveal = document.getElementById("reveal");
+    var solution = document.getElementById("solution");
+    if (reveal && solution) {
+      reveal.addEventListener("click", function () {
+        solution.hidden = false;
+        reveal.hidden = true;
+        if (window.Prism) Prism.highlightAllUnder(solution);
+      });
     }
 
-    function pasteCode() {
-        const codeElement = document.querySelector('#answer');
-        const hiddenInput = document.querySelector('#answer_text');
-
-        navigator.clipboard.readText().then((text) => {
-            hiddenInput.value = text;
-
-            html_text = Prism.highlight(text, Prism.languages.cpp, 'cpp');
-            codeElement.innerHTML = html_text;
-        });
+    // The "completed" button flips the hidden checkbox, then posts the form.
+    var toggle = document.getElementById("toggle-signed");
+    var signed = document.getElementById("signed");
+    if (toggle && signed) {
+      toggle.addEventListener("click", function () {
+        signed.checked = !signed.checked;
+      });
     }
-
-    function showSolution() {
-        const codeElement = document.querySelector('#answer');
-        const hiddenInput = document.querySelector('#answer_text');
-        const openAnswer = $('#open_answer');
-
-        const wrongChoices = $('.form-check');
-        wrongChoices.css('color', 'red');
-
-        const correctChoice = $('.form-check.correct');
-        correctChoice.css('color', 'green');
-
-        if(hiddenInput != null) {
-            html_text = Prism.highlight(hiddenInput.value, Prism.languages.cpp, 'cpp');
-            codeElement.innerHTML = html_text;
-        }
-
-        if(openAnswer != null) {
-            openAnswer.fadeIn();
-        }
-    }
-
-    function flagExercise($form) {
-        const flagCheckbox = document.getElementById("checkboxSignExercise");
-        flagCheckbox.checked = !flagCheckbox.checked;
-        $form.submit();
-    }
-
-    $(document).ready(function() {
-        function loadMermaidTheme() {
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const mermaidTheme = isDarkMode ? 'dark' : 'default';
-
-            if ($(".mermaid").length > 0) {
-                mermaid.initialize({
-                    "flowchart": {"defaultRenderer": "elk"},
-                    startOnLoad: true,
-                    theme: mermaidTheme
-                });
-                mermaid.init(); // Re-renderizza i grafici
-            }
-        }
-
-        const codeElement = document.querySelector('#answer');
-        const hiddenInput = document.querySelector('#answer_text');
-        const openAnswer = $('#open_answer');
-        const mermaidElements = $(".mermaid").length;
-
-        if(hiddenInput != null && hiddenInput.value != "" && is_graded) {
-            html_text = Prism.highlight(hiddenInput.value, Prism.languages.cpp, 'cpp');
-            codeElement.innerHTML = html_text;
-        } else {
-            highlightCode();
-        }
-
-        if(openAnswer != null) {
-            openAnswer.hide();
-        }
-
-        // Initial load for Mermaid theme
-        loadMermaidTheme();
-
-        // Optional: Listen for theme changes
-        const observer = new MutationObserver(loadMermaidTheme);
-        observer.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-
-        // on file input change
-        $('#submitFile').on('change', function () {
-            // get file name
-            var fileName = $(this).val().split('\\').pop();
-            // replace the "Choose a file" label
-            $(this).next('.custom-file-label').html(fileName);
-        })
-    });
+  })();
 </script>
+
+{% if 'mermaid' in exercise.description %}
+{# mermaid.min.js is a classic bundle that assigns globalThis.mermaid — not an ES module. #}
+<script src="{% static 'vendor/mermaid.min.js' %}"></script>
+<script>
+  (function () {
+    var statement = document.getElementById("statement");
+    if (!statement || !window.mermaid) return;
+
+    var nodes = Array.prototype.slice.call(statement.querySelectorAll(".mermaid"));
+    if (!nodes.length) return;
+
+    // Mermaid swaps the source out for SVG, so keep it to re-render on theme change.
+    var sources = nodes.map(function (node) { return node.textContent; });
+
+    function currentTheme() {
+      var explicit = document.documentElement.getAttribute("data-theme");
+      if (explicit) return explicit === "dark" ? "dark" : "default";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default";
+    }
+
+    function render() {
+      // Mermaid paints edge labels on their own background; take it from the card
+      // so the labels don't sit on a light chip in dark mode.
+      var styles = getComputedStyle(document.documentElement);
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: currentTheme(),
+        securityLevel: "strict",
+        themeVariables: {
+          edgeLabelBackground: styles.getPropertyValue("--c-raised").trim(),
+          fontFamily: styles.getPropertyValue("--font-sans").trim()
+        }
+      });
+      nodes.forEach(function (node, i) {
+        node.removeAttribute("data-processed");
+        node.textContent = sources[i];
+      });
+      mermaid.run({ nodes: nodes }).catch(function (error) {
+        console.error("mermaid", error);
+      });
+    }
+
+    render();
+    document.addEventListener("quested:themechange", render);
+  })();
+</script>
+{% endif %}
 {% endblock %}
