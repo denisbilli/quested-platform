@@ -5,7 +5,6 @@ unauthenticated PDF endpoint, cross-user report access, state changes over GET,
 and unvalidated uploads.
 """
 
-import io
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
