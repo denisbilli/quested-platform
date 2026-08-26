@@ -64,6 +64,17 @@ all'avvio. Il primo utente si crea con:
 docker compose exec app python manage.py createsuperuser
 ```
 
+Per avere qualcosa da guardare invece di una sequenza di schermate vuote:
+
+```bash
+docker compose exec app python manage.py seed_demo
+```
+
+Crea un corso dimostrativo con un esercizio di ogni tipo, una verifica valutata
+e un'esercitazione con soluzioni rivelabili. È idempotente. Aggiungi
+`--student-password <pw>` se vuoi entrare anche come studente; senza, l'account
+`studente.demo` nasce senza password utilizzabile.
+
 L'immagine è single-stage: il CSS compilato e i cataloghi `.mo` sono
 versionati, quindi non serve Node né `compilemessages` in fase di build.
 `collectstatic` gira al build con una `SECRET_KEY` usa-e-getta, perché
