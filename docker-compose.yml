@@ -1,3 +1,6 @@
+# Pinned so the volumes stay attached no matter what the checkout is called.
+name: quested
+
 services:
   app:
     build: .
