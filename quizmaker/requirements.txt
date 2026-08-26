@@ -1,8 +1,9 @@
+# Django stays on 5.2 LTS on purpose: 6.x is not a long-term-support release.
 Django==5.2.17
-django-environ==0.12.0
+django-environ==0.14.0
 django-modeltranslation==0.20.3
-Pillow==12.1.0
-reportlab==4.4.9
-chardet==5.2.0
-whitenoise==6.11.0
-gunicorn==23.0.0
+Pillow==12.3.0
+reportlab==5.0.1
+chardet==7.6.0
+whitenoise==6.12.0
+gunicorn==26.2.0
