@@ -22,13 +22,13 @@ corsi insegnano.
 
 ```bash
 python -m venv .venv
-.venv/bin/pip install -r quizmaker/requirements-dev.txt
+.venv/bin/pip install -r quested/requirements-dev.txt
 
-cp quizmaker/.env.example quizmaker/.env
+cp quested/.env.example quested/.env
 # genera una SECRET_KEY e incollala nel .env:
 .venv/bin/python -c "from django.core.management.utils import get_random_secret_key as g; print(g())"
 
-cd quizmaker
+cd quested
 ../.venv/bin/python manage.py migrate
 ../.venv/bin/python manage.py createsuperuser
 ../.venv/bin/python manage.py runserver
@@ -48,7 +48,7 @@ npm run build         # CSS minificato + copia dei file vendor
 ```
 
 I sorgenti stanno in `frontend/app.css`; l'output in
-`quizmaker/static/css/app.css`.
+`quested/static/css/app.css`.
 
 ## Docker
 
@@ -87,7 +87,7 @@ Due, entrambi necessari:
 
 | Volume | Percorso | Contenuto |
 |---|---|---|
-| `quested-media` | `/app/quizmaker/media` | file consegnati dagli studenti |
+| `quested-media` | `/app/quested/media` | file consegnati dagli studenti |
 | `quested-data` | `/app/data` | database SQLite |
 
 `quested-media` è il più delicato: il report PDF rilegge da disco i file
@@ -121,9 +121,9 @@ SECURE_HSTS_SECONDS=31536000
 
 ## Configurazione
 
-Tutto passa da variabili d'ambiente, lette da `quizmaker/.env` (mai
+Tutto passa da variabili d'ambiente, lette da `quested/.env` (mai
 versionato). L'elenco completo con i valori di default è in
-`quizmaker/.env.example`.
+`quested/.env.example`.
 
 In produzione servono almeno:
 
@@ -142,17 +142,19 @@ e `manage.py check --deploy` per verificare.
 ## Struttura
 
 ```text
-PyQuizMakerAdvanced/
-├── frontend/app.css          # sorgente Tailwind + design tokens
-├── quizmaker/
+quested-platform/
+├── frontend/app.css      # sorgente Tailwind + design tokens
+├── quested/
 │   ├── manage.py
 │   ├── .env.example
-│   ├── quizmaker/            # settings, urls, wsgi
-│   ├── studenttest/          # modelli, view, admin, test
+│   ├── quested/          # settings, urls, wsgi
+│   ├── studenttest/      # modelli, view, admin, test
 │   ├── templates/
 │   ├── static/
-│   └── locale/               # traduzioni gettext dell'interfaccia
-└── pyproject.toml            # configurazione ruff e pytest
+│   └── locale/           # traduzioni gettext dell'interfaccia
+├── Dockerfile
+├── docker-compose.yml
+└── pyproject.toml        # configurazione ruff e pytest
 ```
 
 ## Traduzioni

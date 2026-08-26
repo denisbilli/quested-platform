@@ -1,5 +1,5 @@
 """
-Django settings for the quizmaker project.
+Django settings for the quested project.
 
 All environment-specific values are read from environment variables (or a local
 `.env` file) so that no secret ever lives in version control.
@@ -59,7 +59,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "quizmaker.urls"
+ROOT_URLCONF = "quested.urls"
 
 TEMPLATES = [
     {
@@ -72,13 +72,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "quizmaker.context_processors.languages_processor",
+                "quested.context_processors.languages_processor",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "quizmaker.wsgi.application"
+WSGI_APPLICATION = "quested.wsgi.application"
 
 
 # Security

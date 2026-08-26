@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@source "../quizmaker/templates/**/*.html";
-@source "../quizmaker/studenttest/**/*.py";
+@source "../quested/templates/**/*.html";
+@source "../quested/studenttest/**/*.py";
 
 /* ---------------------------------------------------------------------------
    QuestEd — "quaderno / lavagna"

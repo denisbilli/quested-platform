@@ -21,7 +21,7 @@ services:
     volumes:
       # Student submissions. Losing this volume loses the consegne — the PDF
       # report reads the uploaded files back off disk.
-      - quested-media:/app/quizmaker/media
+      - quested-media:/app/quested/media
       # The SQLite database. Drop this pair if you move to Postgres below.
       - quested-data:/app/data
 

@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "Front-end build for the QuestEd Django app",
   "scripts": {
-    "build:css": "tailwindcss -i ./frontend/app.css -o ./quizmaker/static/css/app.css --minify",
-    "watch:css": "tailwindcss -i ./frontend/app.css -o ./quizmaker/static/css/app.css --watch",
+    "build:css": "tailwindcss -i ./frontend/app.css -o ./quested/static/css/app.css --minify",
+    "watch:css": "tailwindcss -i ./frontend/app.css -o ./quested/static/css/app.css --watch",
     "vendor": "node frontend/copy-vendor.mjs",
     "build": "npm run build:css && npm run vendor"
   },

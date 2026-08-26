@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const staticDir = join(root, "quizmaker", "static");
+const staticDir = join(root, "quested", "static");
 const nm = join(root, "node_modules");
 
 const files = [

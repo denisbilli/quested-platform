@@ -14,7 +14,7 @@ ignore = [
 ]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "quizmaker.settings"
+DJANGO_SETTINGS_MODULE = "quested.settings"
 python_files = ["test_*.py", "tests.py"]
-pythonpath = ["quizmaker"]
-testpaths = ["quizmaker"]
+pythonpath = ["quested"]
+testpaths = ["quested"]
